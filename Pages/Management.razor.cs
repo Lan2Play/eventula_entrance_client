@@ -7,11 +7,29 @@ using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net;
+using System.Linq;
+using System.Net.Http.Headers;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Management
     {
+        #region consts
+
+        private const string _CsrfCookieUrl = "sanctum/csrf-cookie";
+        private const string _UserApiParticipantUrl = "api/admin/event/participants/{0}";
+
+        #endregion
+        #region Injects
+
+        [Inject]
+        ProtectionService ProtectionService { get; set; }
+
+        [Inject]
+        NavigationManager NavigationManager { get; set; }
+
         [Inject]
         IJSRuntime JSRuntime { get; set; }
 
@@ -23,6 +41,18 @@ namespace EventulaEntranceClient.Pages
 
         [Inject]
         BackgroundTrigger BackgroundTrigger { get; set; }
+
+
+        [Inject]
+        IHttpClientFactory HttpClientFactory { get; set; }
+
+        [Inject]
+        CookieContainer Cookies { get; set; }
+
+
+        [Inject]
+        EventulaTokenService TokenService { get; set; }
+        #endregion
 
         public List<string> Persons { get; set; } = new List<string>();
 
@@ -71,14 +101,56 @@ namespace EventulaEntranceClient.Pages
             Logger.LogInformation($"QR Code found {qrCode}");
             if (!string.IsNullOrEmpty(qrCode))
             {
-                Persons.Add(qrCode);
+                using var httpClient = HttpClientFactory.CreateClient(nameof(Management));
+
+                await SetXcsrfHeader(httpClient);
+                SetDefaultHeaders(httpClient, await TokenService.RetrieveTokenAsync());
+
+                var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
+                var content = await getResult.Content.ReadAsStringAsync();
+
+                Persons.Add(content);
                 await InvokeAsync(StateHasChanged);
             }
         }
+
+        private async Task SetXcsrfHeader(HttpClient httpClient)
+        {
+            var csrfCookieUrl = new Uri(httpClient.BaseAddress, _CsrfCookieUrl);
+
+
+            var csrfCookies = Cookies.GetCookies(csrfCookieUrl);
+
+            var csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
+
+            if (csrfToken == null)
+            {
+                var getCsrfResult = await httpClient.GetAsync(_CsrfCookieUrl);
+                csrfCookies = Cookies.GetCookies(csrfCookieUrl);
+                csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
+            }
+
+            if (csrfToken != null)
+            {
+                httpClient.DefaultRequestHeaders.Add("X-CSRF-Token", csrfToken.Value);
+            }
+        }
+
+        private static void SetDefaultHeaders(HttpClient httpClient, string token)
+        {
+            var requestToken = token.Split('|').Last();
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", requestToken);
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        #region IDisposable
 
         void IDisposable.Dispose()
         {
             BackgroundTrigger.Trigger -= Trigger;
         }
+        #endregion
+
     }
 }

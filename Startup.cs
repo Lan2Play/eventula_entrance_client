@@ -8,6 +8,9 @@ using ElectronNET.API;
 using EventulaEntranceClient.Services.Interfaces;
 using EventulaEntranceClient.Services;
 using Microsoft.Extensions.Logging;
+using EventulaEntranceClient.Pages;
+using System.Net;
+using System.Net.Http;
 
 namespace EventulaEntranceClient
 {
@@ -28,12 +31,22 @@ namespace EventulaEntranceClient
             services.AddServerSideBlazor();
 
             services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
+            services.AddSingleton<CookieContainer>();
 
             services.AddSingleton<BackgroundTrigger>();
             services.AddSingleton<ProtectionService>();
             services.AddScoped<EventulaTokenService>();
 
             services.AddSingleton<IBarcodeService>(sp => new ZXingBarcodeService(sp.GetRequiredService<ILogger<ZXingBarcodeService>>()));
+
+            services.AddHttpClient(nameof(Management), client =>
+            {
+                client.BaseAddress = new System.Uri("https://lan2play.de");
+            }).ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                var cookieContainer = sp.GetRequiredService<CookieContainer>();
+                return new HttpClientHandler { CookieContainer = cookieContainer };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

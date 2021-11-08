@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using EventulaEntranceClient.Services;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Components;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Management
     {
+        [Inject]
+        BackgroundTrigger BackgroundTrigger { get; set; }
+
         protected override void OnInitialized()
         {
             BackgroundTrigger.Trigger += Trigger;
@@ -38,7 +41,7 @@ namespace EventulaEntranceClient.Pages
 
         private async void Trigger(object sender, EventArgs eventArgs)
         {
-            CaptureFrame();
+            await CaptureFrame();
         }
 
         private async Task CaptureFrame()

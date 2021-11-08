@@ -1,0 +1,66 @@
+@page "/"
+@inject IJSRuntime JSRuntime
+@inject IBarcodeService BarcodeService
+@inject ILogger<Index> Logger
+@implements IDisposable
+
+<h1>Hello, world!</h1>
+
+<video id="videoFeed" width="1280" height="720" />
+<canvas class="d-none" id="currentFrame" width="1280" height="720" />
+@code{
+
+
+    CancellationTokenSource _Cts;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+        }
+
+        _Cts = new CancellationTokenSource();
+
+        Task.Run(() => CaptureFrameTimer(_Cts.Token).ConfigureAwait(false));
+    }
+
+    private async Task CaptureFrame()
+    {
+        await JSRuntime.InvokeAsync<String>("getFrame", "videoFeed", "currentFrame", DotNetObjectReference.Create(this)).ConfigureAwait(false);
+    }
+
+    [JSInvokable]
+    public void ProcessImage(string imageString)
+    {
+        byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
+
+        var txt = BarcodeService.BarcodeTextFromImage(imageData);
+    }
+
+
+    private async Task CaptureFrameTimer(CancellationToken cancellationToken)
+    {
+        //while (!cancellationToken.IsCancellationRequested)
+        while (true)
+        {
+            try
+            {
+                await CaptureFrame().ConfigureAwait(false);
+
+                await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Exception on capturing frame");
+            }
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        //_Cts?.Cancel();
+        //_Cts?.Dispose();
+    }
+
+}

@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using EventulaEntranceClient.Services;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Collections.Generic;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -14,6 +16,20 @@ namespace EventulaEntranceClient.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
+            {
+                if (!ProtectionService.CheckPrivateAccessCodeHash(accessCode))
+                {
+                    NavigationManager.NavigateTo("");
+                }
+            }
+            else
+            {
+                NavigationManager.NavigateTo("");
+            }
+
+
             if (firstRender)
             {
                 await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");

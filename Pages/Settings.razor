@@ -1,0 +1,27 @@
+﻿@page "/settings"
+
+@inject ILogger<Settings> Logger
+@inject ProtectionService ProtectionService
+@inject NavigationManager NavigationManager
+@inject EventulaTokenService EventulaTokenService
+
+<form @onsubmit=Submit>
+    <h1 class="mb-3 font-weight-normal text-center">Einstellungen</h1>
+
+    <div class="form-group">
+        <label class="lg-font">Eventula Token</label>
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@EventulaToken" placeholder="Token" />
+    </div>
+    <hr class="mb-4">
+    <div class="form-group">
+        <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="submit">
+            Absenden
+        </button>
+        <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="button"
+                @onclick="@Cancel">
+            Abbrechen
+        </button>
+    </div>
+</form>
+
+

@@ -22,7 +22,7 @@ namespace EventulaEntranceClient.Pages
 
         private async void Trigger(object sender, EventArgs eventArgs)
         {
-            CaptureFrame();
+            await CaptureFrame();
         }
 
         private async Task CaptureFrame()

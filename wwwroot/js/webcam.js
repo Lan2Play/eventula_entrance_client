@@ -13,20 +13,22 @@
             //mirror image
             video.style.webkitTransform = "scaleX(-1)";
             video.style.transform = "scaleX(-1)";
+            video.style.visibility = "collapse"
+            video.style.position = "fixed"
         });
     }
 }
 
-function getFrame(src, dest, dotNetHelper) {
+function getFrame(src, dest) {
     let video = document.getElementById(src);
     var canvas = document.createElement("canvas");
 
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 1920;
+    canvas.height = 1080;
 
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
     let dataUrl = canvas.toDataURL("image/jpeg");
-
+    return dataUrl;
     dotNetHelper.invokeMethodAsync('ProcessImage', dataUrl);
 }

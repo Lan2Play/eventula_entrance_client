@@ -33,7 +33,7 @@ namespace EventulaEntranceClient.Services
                 {
                     Trigger?.Invoke(this, new EventArgs());
 
-                    await Task.Delay(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

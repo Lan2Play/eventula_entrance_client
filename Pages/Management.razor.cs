@@ -3,14 +3,27 @@ using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using EventulaEntranceClient.Services;
 using Microsoft.AspNetCore.Components;
+using EventulaEntranceClient.Services.Interfaces;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Management
     {
+        [Inject]
+        IJSRuntime JSRuntime { get; set; }
+
+        [Inject]
+        IBarcodeService BarcodeService { get; set; }
+
+        [Inject]
+        ILogger<Index> Logger { get; set; }
 
         [Inject]
         BackgroundTrigger BackgroundTrigger { get; set; }
+
+        public List<string> Persons { get; set; } = new List<string>();
 
         protected override void OnInitialized()
         {
@@ -32,14 +45,20 @@ namespace EventulaEntranceClient.Pages
 
         private async Task CaptureFrame()
         {
-            await JSRuntime.InvokeAsync<String>("getFrame", "videoFeed", "currentFrame", DotNetObjectReference.Create(this)).ConfigureAwait(false);
+            var data = await JSRuntime.InvokeAsync<string>("getFrame", "videoFeed", "currentFrame").ConfigureAwait(false);
+            await ProcessImage(data);
         }
 
-        [JSInvokable]
-        public void ProcessImage(string imageString)
+        public async Task ProcessImage(string imageString)
         {
             byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
-            var txt = BarcodeService.BarcodeTextFromImage(imageData);
+            var qrCode = BarcodeService.BarcodeTextFromImage(imageData);
+            Logger.LogInformation($"QR Code found {qrCode}");
+            if (!string.IsNullOrEmpty(qrCode))
+            {
+                Persons.Add(qrCode);
+                await InvokeAsync(StateHasChanged);
+            }
         }
 
         void IDisposable.Dispose()

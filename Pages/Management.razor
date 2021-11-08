@@ -1,12 +1,25 @@
 ﻿@page "/management"
 
-@inject IJSRuntime JSRuntime
-@inject IBarcodeService BarcodeService
-@inject ILogger<Index> Logger
 @implements IDisposable
 
 <h1>Hello, world!</h1>
 
-<video id="videoFeed" width="800" height="600" />
+<video id="videoFeed" width="1920" height="1080" style="margin-left:-5000px" />
+
+<div class="row">
+	<div class="col">
+		<ul id='personlist'>
+
+			@foreach (var person in Persons)
+			{
+				<li>
+					@person
+				</li>
+			}
+
+		</ul>
+	</div>
+
+</div>
 
 

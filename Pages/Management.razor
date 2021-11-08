@@ -1,5 +1,13 @@
 ﻿@page "/management"
 
-<h3>Management</h3>
+@inject IJSRuntime JSRuntime
+@inject IBarcodeService BarcodeService
+@inject ILogger<Index> Logger
+@implements IDisposable
+@inject BackgroundTrigger BackgroundTrigger
+
+<h1>Hello, world!</h1>
+
+<video id="videoFeed" width="800" height="600" />
 
 

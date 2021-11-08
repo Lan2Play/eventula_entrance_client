@@ -30,6 +30,8 @@ namespace EventulaEntranceClient
             services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
 
             services.AddSingleton<BackgroundTrigger>();
+            services.AddSingleton<ProtectionService>();
+            services.AddScoped<EventulaTokenService>();
 
             services.AddSingleton<IBarcodeService>(sp => new ZXingBarcodeService(sp.GetRequiredService<ILogger<ZXingBarcodeService>>()));
         }

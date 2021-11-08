@@ -1,45 +1,49 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
 using EventulaEntranceClient.Services;
+using System.Threading.Tasks;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Index
     {
-        protected override void OnInitialized()
+        string accessCode;
+
+        bool ErrorHidden = true;
+
+        protected async void CheckAccessCodeSettings()
         {
-            BackgroundTrigger.Trigger += Trigger;
+            await CheckAccessCodeAndNavigate("settings").ConfigureAwait(false);
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        protected async void CheckAccessCodeManagement()
         {
-            if (firstRender)
+            await CheckAccessCodeAndNavigate("management").ConfigureAwait(false);
+        }
+
+        private async Task CheckAccessCodeAndNavigate(string route)
+        {
+            ErrorHidden = true;
+
+            var hash = ProtectionService.CalculateHash(accessCode);
+
+            if (ProtectionService.CheckPrivateAccessCodeHash(hash))
             {
-                await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+                NavigationManager.NavigateTo($"{route}?ac={hash}");
+            }
+            else
+            {
+                accessCode = string.Empty;
+                ErrorHidden = false;
             }
         }
 
-        private async void Trigger(object sender, EventArgs eventArgs)
+        protected async void CloseAlert()
         {
-            await CaptureFrame();
+            ErrorHidden = true;
         }
 
-        private async Task CaptureFrame()
+        private void Enter()
         {
-            await JSRuntime.InvokeAsync<String>("getFrame", "videoFeed", "currentFrame", DotNetObjectReference.Create(this)).ConfigureAwait(false);
-        }
-
-        [JSInvokable]
-        public void ProcessImage(string imageString)
-        {
-            byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
-            var txt = BarcodeService.BarcodeTextFromImage(imageData);
-        }
-
-        void IDisposable.Dispose()
-        {
-            BackgroundTrigger.Trigger -= Trigger;
+            CheckAccessCodeManagement();
         }
     }
 }

@@ -1,11 +1,28 @@
 @page "/"
-@inject IJSRuntime JSRuntime
-@inject IBarcodeService BarcodeService
+
 @inject ILogger<Index> Logger
-@implements IDisposable
-@inject BackgroundTrigger BackgroundTrigger
+@inject NavigationManager NavigationManager
+@inject ProtectionService ProtectionService
 
-<h1>Hello, world!</h1>
 
-<video id="videoFeed" width="800" height="600" />
+<form @onsubmit=Enter class="text-center">
+    <h1 class="mb-3 font-weight-normal">Zugang</h1>
+    <input type="password" id="secret" @bind="@accessCode" class="form-control shadow-none transparent-input mb-3 lg-font" placeholder="Zugangscode">
+
+    <div class="alert alert-warning alert-dismissible lg-font" hidden="@ErrorHidden">
+        Falscher Zugangscode. Bitte Zugangscode überprüfen.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="@CloseAlert">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</form>
+<div>
+    <button id="aaaa" class="btn btn-outline-primary btn-block shadow-none lg-font" @onclick="@CheckAccessCodeManagement">Betreten Main</button>
+    <button id="aaaaaaa" class="btn btn-outline-primary btn-block shadow-none lg-font" @onclick="@CheckAccessCodeSettings">Betreten Settings</button>
+</div>
+
+
+<footer class="fixed-bottom text-center footer">
+    <a href="/impressum">Impressum</a>
+</footer>
 

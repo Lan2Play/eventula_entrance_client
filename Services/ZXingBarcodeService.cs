@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using ZXing;
 
@@ -26,14 +25,13 @@ namespace EventulaEntranceClient.Services
                 {
                     var img = (Bitmap)Image.FromStream(ms);
 
-                    img.Save(@$"C:\temp\imgs\{Path.GetFileNameWithoutExtension(Path.GetTempFileName())}.bmp", ImageFormat.Bmp);
-
                     var result = _BarcodeReader.Decode(img);
                     // do something with the result
                     if (result != null)
-                    {
+                    {                        
                         return result.Text;
                     }
+                    
                 }
             }
             catch(Exception ex)

@@ -27,6 +27,10 @@ namespace EventulaEntranceClient
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
+
+            services.AddSingleton<BackgroundTrigger>();
+
             services.AddSingleton<IBarcodeService>(sp => new ZXingBarcodeService(sp.GetRequiredService<ILogger<ZXingBarcodeService>>()));
         }
 

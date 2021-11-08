@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Net;
 using System.Linq;
 using System.Net.Http.Headers;
+using EventulaEntranceClient.Models;
+using System.Text.Json;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -54,7 +56,7 @@ namespace EventulaEntranceClient.Pages
         EventulaTokenService TokenService { get; set; }
         #endregion
 
-        public List<string> Persons { get; set; } = new List<string>();
+        public List<TicketRequest> TicketRequests { get; set; } = new List<TicketRequest>();
 
         protected override void OnInitialized()
         {
@@ -109,8 +111,12 @@ namespace EventulaEntranceClient.Pages
                 var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
                 var content = await getResult.Content.ReadAsStringAsync();
 
-                Persons.Add(content);
-                await InvokeAsync(StateHasChanged);
+               var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if(ticketRequest != null)
+                {
+                    TicketRequests.Add(ticketRequest);
+                    await InvokeAsync(StateHasChanged);
+                }
             }
         }
 

@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:eventula_entrance_client.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:eventula_entrance_client.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="eventula_entrance_client.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="eventula_entrance_client">
+
+      <!-- <Design.DataContext>
+        <vm:NewUsersViewModel/>
+    </Design.DataContext> -->
+<Grid ShowGridLines="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3.5*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <views:SelectedUsersView Grid.Row="0" Grid.Column="0" Content="{Binding SelectedUsers}" />
+                    <views:NewUsersView Grid.Row="0" Grid.Column="1" Content="{Binding NewUsers}" />
+                </Grid>
+
+
+
+</Window>
+
+

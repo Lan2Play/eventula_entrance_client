@@ -57,9 +57,7 @@ namespace EventulaEntranceClient.Pages
         {
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
-            StringValues accessCode;
-
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out accessCode))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
             {
                 if (!ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                 {
@@ -83,8 +81,6 @@ namespace EventulaEntranceClient.Pages
             }
             else
             {
-                
-                
                 if (firstRender)
                 {
                     await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");

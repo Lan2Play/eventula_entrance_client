@@ -30,5 +30,4 @@ function getFrame(src, dest) {
 
     let dataUrl = canvas.toDataURL("image/jpeg");
     return dataUrl;
-    dotNetHelper.invokeMethodAsync('ProcessImage', dataUrl);
 }

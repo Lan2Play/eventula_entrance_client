@@ -1,22 +1,37 @@
 using System.Threading.Tasks;
 using EventulaEntranceClient.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Settings
     {
+        #region
+
+        [Inject]
+        private ILogger<Settings> _Logger { get; set; }
+        [Inject]
+        private ProtectionService _ProtectionService { get; set; }
+        [Inject]
+        private NavigationManager _NavigationManager { get; set; }
+        [Inject]
+        private EventulaTokenService _EventulaTokenService { get; set; }
+
+        #endregion
+
         public string EventulaToken;
 
         protected async Task SaveToken()
         {
-            if (await EventulaTokenService.SaveTokenAsync(EventulaToken).ConfigureAwait(false))
+            if (await _EventulaTokenService.SaveTokenAsync(EventulaToken).ConfigureAwait(false))
             {
-                NavigationManager.NavigateTo("");
+                _NavigationManager.NavigateTo("");
             }
             else
             {
-                NavigationManager.NavigateTo("Error");
+                _NavigationManager.NavigateTo("Error");
             }
         }
 
@@ -27,28 +42,28 @@ namespace EventulaEntranceClient.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
             {
-                if (!ProtectionService.CheckPrivateAccessCodeHash(accessCode))
+                if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                 {
-                    NavigationManager.NavigateTo("");
+                    _NavigationManager.NavigateTo("");
                 }
             }
             else
             {
-                NavigationManager.NavigateTo("");
+                _NavigationManager.NavigateTo("");
             }
         }
 
         protected override async Task OnParametersSetAsync()
         {
-            EventulaToken = await EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
+            EventulaToken = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
         }
 
         protected void Cancel()
         {
-            NavigationManager.NavigateTo("");
+            _NavigationManager.NavigateTo("");
         }
     }
 }

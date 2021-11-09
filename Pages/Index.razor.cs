@@ -1,9 +1,25 @@
 using EventulaEntranceClient.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Index
     {
+        #region Injects 
+
+        [Inject] 
+        private ILogger<Index> _Logger { get; set; }
+        
+        [Inject]
+        private NavigationManager _NavigationManager { get; set; }
+        
+        [Inject]
+        private ProtectionService _ProtectionService { get; set; }
+
+        #endregion
+
+
         string AccessCode { get; set; } = string.Empty;
 
         bool ErrorHidden = true;
@@ -27,11 +43,11 @@ namespace EventulaEntranceClient.Pages
 
             ErrorHidden = true;
 
-            var hash = ProtectionService.CalculateHash(AccessCode);
+            var hash = _ProtectionService.CalculateHash(AccessCode);
 
-            if (ProtectionService.CheckPrivateAccessCodeHash(hash))
+            if (_ProtectionService.CheckPrivateAccessCodeHash(hash))
             {
-                NavigationManager.NavigateTo($"{route}?ac={hash}");
+                _NavigationManager.NavigateTo($"{route}?ac={hash}");
             }
             else
             {

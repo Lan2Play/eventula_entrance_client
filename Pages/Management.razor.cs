@@ -8,7 +8,6 @@ using EventulaEntranceClient.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using EventulaEntranceClient.Models;
-using Microsoft.Extensions.Primitives;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -17,28 +16,28 @@ namespace EventulaEntranceClient.Pages
         #region Injects
 
         [Inject]
-        ProtectionService ProtectionService { get; set; }
+        private ProtectionService _ProtectionService { get; set; }
 
         [Inject]
-        NavigationManager NavigationManager { get; set; }
+        private NavigationManager _NavigationManager { get; set; }
 
         [Inject]
-        IJSRuntime JSRuntime { get; set; }
+        private IJSRuntime _JSRuntime { get; set; }
 
         [Inject]
-        IBarcodeService BarcodeService { get; set; }
+        private IBarcodeService _BarcodeService { get; set; }
 
         [Inject]
-        ILogger<Index> Logger { get; set; }
+        private ILogger<Index> _Logger { get; set; }
 
         [Inject]
-        BackgroundTrigger BackgroundTrigger { get; set; }
+        private BackgroundTrigger _BackgroundTrigger { get; set; }
 
         [Inject]
-        EventulaApiService EventulaApiService { get; set; }
+        private EventulaApiService _EventulaApiService { get; set; }
 
         [Inject]
-        EventulaTokenService EventulaTokenService { get; set; }
+        private EventulaTokenService _EventulaTokenService { get; set; }
 
         #endregion
 
@@ -49,18 +48,18 @@ namespace EventulaEntranceClient.Pages
 
         protected override void OnInitialized()
         {
-            BackgroundTrigger.Trigger += Trigger;
+            _BackgroundTrigger.Trigger += Trigger;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
 
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
             {
-                if (!ProtectionService.CheckPrivateAccessCodeHash(accessCode))
+                if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                 {
-                    NavigationManager.NavigateTo("");
+                    _NavigationManager.NavigateTo("");
                 }
 
                 AccessCode = accessCode;
@@ -69,20 +68,20 @@ namespace EventulaEntranceClient.Pages
             }
             else
             {
-                NavigationManager.NavigateTo("");
+                _NavigationManager.NavigateTo("");
             }
 
-            var token = await EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
+            var token = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(token))
             {
-                NavigationManager.NavigateTo($"settings?ac={accessCode}");
+                _NavigationManager.NavigateTo($"settings?ac={accessCode}");
             }
             else
             {
                 if (firstRender)
                 {
-                    await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+                    await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
                 }
             }
         }
@@ -94,19 +93,19 @@ namespace EventulaEntranceClient.Pages
 
         private async Task CaptureFrame()
         {
-            var data = await JSRuntime.InvokeAsync<string>("getFrame", "videoFeed", "currentFrame").ConfigureAwait(false);
+            var data = await _JSRuntime.InvokeAsync<string>("getFrame", "videoFeed", "currentFrame").ConfigureAwait(false);
             await ProcessImage(data);
         }
 
         public async Task ProcessImage(string imageString)
         {
             byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
-            var qrCode = BarcodeService.BarcodeTextFromImage(imageData);
-            Logger.LogInformation($"QR Code found {qrCode}");
+            var qrCode = _BarcodeService.BarcodeTextFromImage(imageData);
+            _Logger.LogInformation($"QR Code found {qrCode}");
             if (!string.IsNullOrEmpty(qrCode))
             {
 
-                var ticketRequest = await EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
+                var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
                 if (ticketRequest != null)
                 {
                     TicketRequests.Add(ticketRequest);
@@ -119,7 +118,7 @@ namespace EventulaEntranceClient.Pages
 
         void IDisposable.Dispose()
         {
-            BackgroundTrigger.Trigger -= Trigger;
+            _BackgroundTrigger.Trigger -= Trigger;
         }
         #endregion
 

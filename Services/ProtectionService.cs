@@ -6,12 +6,6 @@ namespace EventulaEntranceClient.Services
     public class ProtectionService
     {
         private const string _PrivateAccessCode = "ac3fbb3474801233a338e0f27af3477773ad8772d35c87f70d9489837babb35a";
-
-        public ProtectionService()
-        {
-            
-        }
-
      
         public bool CheckPrivateAccessCodeHash(string accessCodeHash)
         {

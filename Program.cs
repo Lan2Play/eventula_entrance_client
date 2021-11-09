@@ -1,22 +1,55 @@
 using ElectronNET.API;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using EventulaEntranceClient.Pages;
+using EventulaEntranceClient.Services;
+using EventulaEntranceClient.Services.Interfaces;
+using System.Net;
 
-namespace EventulaEntranceClient
+var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseElectron(args);  // add this line here
+
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
+builder.Services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
+builder.Services.AddSingleton<CookieContainer>();
+
+builder.Services.AddSingleton<BackgroundTrigger>();
+builder.Services.AddSingleton<ProtectionService>();
+builder.Services.AddScoped<EventulaTokenService>();
+builder.Services.AddScoped<EventulaApiService>();
+
+builder.Services.AddSingleton<IBarcodeService>(sp => new ZXingBarcodeService(sp.GetRequiredService<ILogger<ZXingBarcodeService>>()));
+
+builder.Services.AddHttpClient(nameof(Management), client =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    client.BaseAddress = new System.Uri("https://lan2play.de");
+}).ConfigurePrimaryHttpMessageHandler(sp =>
+{
+    var cookieContainer = sp.GetRequiredService<CookieContainer>();
+    return new HttpClientHandler { CookieContainer = cookieContainer };
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseElectron(args);
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
+
+Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+
+app.Run();

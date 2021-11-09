@@ -8,8 +8,9 @@
 <video id="videoFeed" width="1920" height="1080" style="margin-left:-5000px" />
 
 <div class="row">
-	<div class="col">
-		<ul id='personlist'>
+	<div class="col-auto"></div>
+	<div class="col-3 col-md-2">
+		<ul>
 
 			@foreach (var ticketRequests in TicketRequests)
 			{
@@ -22,6 +23,7 @@
 	</div>
 
 </div>
+
 <footer class="fixed-bottom text-center footer">
 	<a href="settings/?ac=@AccessCode">Settings</a>
 </footer>

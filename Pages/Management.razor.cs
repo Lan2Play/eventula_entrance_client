@@ -14,7 +14,6 @@ namespace EventulaEntranceClient.Pages
 {
     public partial class Management
     {
-
         #region Injects
 
         [Inject]
@@ -75,7 +74,7 @@ namespace EventulaEntranceClient.Pages
 
             var token = await EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
 
-            if(string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
                 NavigationManager.NavigateTo($"settings?ac={accessCode}");
             }

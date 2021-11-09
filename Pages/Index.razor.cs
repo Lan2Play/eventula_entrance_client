@@ -20,9 +20,9 @@ namespace EventulaEntranceClient.Pages
         #endregion
 
 
-        string AccessCode { get; set; } = string.Empty;
+        public string AccessCode { get; set; } = string.Empty;
 
-        bool ErrorHidden = true;
+        public bool ErrorHidden { get; set; } = true;
 
         protected void AddToCode(int code)
         {

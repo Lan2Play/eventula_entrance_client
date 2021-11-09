@@ -7,24 +7,35 @@
 
 <video id="videoFeed" width="1920" height="1080" style="margin-left:-5000px" />
 
+
 <div class="row">
-	<div class="col-auto"></div>
-	<div class="col-3 col-md-2">
-		<ul>
-
-			@foreach (var participant in Participants)
-			{
-				<li>
-					@participant.User.Firstname @participant.User.Surname
-				</li>
-			}
-
-		</ul>
-	</div>
-
+    <div class="col-10">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var participant in Participants)
+            {
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@participant.User.Firstname @participant.User.Surname</h5>
+                            <p class="card-text">Fahrrad</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                @foreach (var participant in Participants)
+                {
+                    <li class="list-group-item">@participant.User.Firstname @participant.User.Surname</li>
+                }
+            </ul>
+        </div>
+    </div>
 </div>
 
 <footer class="fixed-bottom text-center footer">
-	<a href="settings/?ac=@AccessCode">Settings</a>
+    <a href="settings/?ac=@AccessCode">Settings</a>
 </footer>
-

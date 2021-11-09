@@ -1,12 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using EventulaEntranceClient.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using EventulaEntranceClient.Models;
 
 namespace EventulaEntranceClient.Pages
@@ -34,6 +30,9 @@ namespace EventulaEntranceClient.Pages
         private BackgroundTrigger _BackgroundTrigger { get; set; }
 
         [Inject]
+        private UiNotifyService _UiNotifyService { get; set; }
+
+        [Inject]
         private EventulaApiService _EventulaApiService { get; set; }
 
         [Inject]
@@ -41,7 +40,7 @@ namespace EventulaEntranceClient.Pages
 
         #endregion
 
-        public List<TicketRequest> TicketRequests { get; set; } = new List<TicketRequest>();
+        public List<Participant> Participants { get; set; } = new List<Participant>();
 
         private string AccessCode { get; set; }
 
@@ -49,6 +48,12 @@ namespace EventulaEntranceClient.Pages
         protected override void OnInitialized()
         {
             _BackgroundTrigger.Trigger += Trigger;
+            _UiNotifyService.NewParticipant += OnNewParticipant;
+        }
+
+        private void OnNewParticipant(object sender, Participant e)
+        {
+            throw new NotImplementedException();
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -106,9 +111,9 @@ namespace EventulaEntranceClient.Pages
             {
 
                 var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
-                if (ticketRequest != null)
+                if (ticketRequest?.Participant != null)
                 {
-                    TicketRequests.Add(ticketRequest);
+                    Participants.Add(ticketRequest.Participant);
                     await InvokeAsync(StateHasChanged);
                 }
             }

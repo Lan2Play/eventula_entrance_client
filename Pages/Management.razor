@@ -11,10 +11,10 @@
 	<div class="col">
 		<ul id='personlist'>
 
-			@foreach (var ticketRequests in TicketRequests)
+			@foreach (var participant in Participants)
 			{
 				<li>
-					@ticketRequests.Participant.User.Firstname @ticketRequests.Participant.User.Surname
+					@participant.User.Firstname @participant.User.Surname
 				</li>
 			}
 

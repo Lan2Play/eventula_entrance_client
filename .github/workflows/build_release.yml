@@ -35,7 +35,7 @@ jobs:
       run:  echo "EVENTULAENTRANCECLIENTVER=1.0.0" >> $GITHUB_ENV
       shell: bash
     - name: set client version
-      run: sed -i "s|\"buildVersion\": \".*\"|\"buildVersion\": \"$EVENTULAENTRANCECLIENTVER\"|g" electron.manifest.json
+      run: 'sed -i "s|\"buildVersion\": \".*\"|\"buildVersion\": \"$EVENTULAENTRANCECLIENTVER\"|g" electron.manifest.json'
       shell: bash
 
     - name: Build

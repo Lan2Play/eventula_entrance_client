@@ -4,6 +4,14 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+html,
+body,
+.page,
+.content {
+    height: 100%;
+    margin: 0;
+}
+
 a, .btn-link {
     color: #0366d6;
 }
@@ -48,3 +56,19 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+
+.btn-key {
+    width: 72px;
+    height: 64px;
+    background-color: white;
+}
+
+
+.login-page {
+    background-image: url("../images/logo_main.webp");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+}

@@ -5,13 +5,18 @@ namespace EventulaEntranceClient.Pages
 {
     public partial class Index
     {
-        string accessCode;
+        string AccessCode { get; set; } = string.Empty;
 
         bool ErrorHidden = true;
 
         protected async void CheckAccessCodeSettings()
         {
             await CheckAccessCodeAndNavigate("settings").ConfigureAwait(false);
+        }
+
+        protected void AddToCode(int code)
+        {
+            AccessCode += code;
         }
 
         protected async void CheckAccessCodeManagement()
@@ -21,9 +26,14 @@ namespace EventulaEntranceClient.Pages
 
         private async Task CheckAccessCodeAndNavigate(string route)
         {
+            if(AccessCode.Length < 8)
+			{
+                return;
+			}
+
             ErrorHidden = true;
 
-            var hash = ProtectionService.CalculateHash(accessCode);
+            var hash = ProtectionService.CalculateHash(AccessCode);
 
             if (ProtectionService.CheckPrivateAccessCodeHash(hash))
             {
@@ -31,7 +41,7 @@ namespace EventulaEntranceClient.Pages
             }
             else
             {
-                accessCode = string.Empty;
+                AccessCode = string.Empty;
                 ErrorHidden = false;
             }
         }

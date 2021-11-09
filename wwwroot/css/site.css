@@ -2,12 +2,6 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-html,
-body,
-.page,
-.content {
     height: 100%;
     margin: 0;
 }

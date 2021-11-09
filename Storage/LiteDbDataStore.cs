@@ -1,8 +1,4 @@
 ﻿using LiteDB;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace EventulaEntranceClient.Storage
 {
@@ -13,20 +9,32 @@ namespace EventulaEntranceClient.Storage
 
         public LiteDbDataStore()
         {
-            _LiteDatabase = new LiteDatabase(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EventulaEntranceClient", "LiteDb.db"));
+            var folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EventulaEntranceClient");
+
+            if(!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            _LiteDatabase = new LiteDatabase(Path.Combine(folderPath, "LiteDb.db"));
         }
 
         public void AddOrUpdate<T>(T data)
             where T : IStoreObject
         {
             _LiteDatabase.GetCollection<T>().Upsert(new BsonValue(data.Id), data);
-            throw new System.NotImplementedException();
         }
 
         public IEnumerable<T> Load<T>()
             where T : IStoreObject
         {
             return _LiteDatabase.GetCollection<T>().FindAll().ToList();
+        }
+
+        public T LoadById<T>(int id) 
+            where T : IStoreObject
+        {
+            return _LiteDatabase.GetCollection<T>().FindById(new BsonValue(id));
         }
 
         protected virtual void Dispose(bool disposing)
@@ -57,5 +65,7 @@ namespace EventulaEntranceClient.Storage
             Dispose(disposing: true);
             System.GC.SuppressFinalize(this);
         }
+
+       
     }
 }

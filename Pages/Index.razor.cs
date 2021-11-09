@@ -1,5 +1,4 @@
 using EventulaEntranceClient.Services;
-using System.Threading.Tasks;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -9,22 +8,17 @@ namespace EventulaEntranceClient.Pages
 
         bool ErrorHidden = true;
 
-        protected async void CheckAccessCodeSettings()
-        {
-            await CheckAccessCodeAndNavigate("settings").ConfigureAwait(false);
-        }
-
         protected void AddToCode(int code)
         {
             AccessCode += code;
         }
 
-        protected async void CheckAccessCodeManagement()
+        protected void CheckAccessCodeManagement()
         {
-            await CheckAccessCodeAndNavigate("management").ConfigureAwait(false);
+            CheckAccessCodeAndNavigate("management");
         }
 
-        private async Task CheckAccessCodeAndNavigate(string route)
+        private void CheckAccessCodeAndNavigate(string route)
         {
             if(AccessCode.Length < 8)
 			{

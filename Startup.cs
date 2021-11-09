@@ -36,6 +36,7 @@ namespace EventulaEntranceClient
             services.AddSingleton<BackgroundTrigger>();
             services.AddSingleton<ProtectionService>();
             services.AddScoped<EventulaTokenService>();
+            services.AddScoped<EventulaApiService>();
 
             services.AddSingleton<IBarcodeService>(sp => new ZXingBarcodeService(sp.GetRequiredService<ILogger<ZXingBarcodeService>>()));
 

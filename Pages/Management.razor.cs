@@ -7,23 +7,14 @@ using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net;
-using System.Linq;
-using System.Net.Http.Headers;
 using EventulaEntranceClient.Models;
-using System.Text.Json;
+using Microsoft.Extensions.Primitives;
 
 namespace EventulaEntranceClient.Pages
 {
     public partial class Management
     {
-        #region consts
 
-        private const string _CsrfCookieUrl = "sanctum/csrf-cookie";
-        private const string _UserApiParticipantUrl = "api/admin/event/participants/{0}";
-
-        #endregion
         #region Injects
 
         [Inject]
@@ -44,19 +35,18 @@ namespace EventulaEntranceClient.Pages
         [Inject]
         BackgroundTrigger BackgroundTrigger { get; set; }
 
+        [Inject]
+        EventulaApiService EventulaApiService { get; set; }
 
         [Inject]
-        IHttpClientFactory HttpClientFactory { get; set; }
+        EventulaTokenService EventulaTokenService { get; set; }
 
-        [Inject]
-        CookieContainer Cookies { get; set; }
-
-
-        [Inject]
-        EventulaTokenService TokenService { get; set; }
         #endregion
 
         public List<TicketRequest> TicketRequests { get; set; } = new List<TicketRequest>();
+
+        private string AccessCode { get; set; }
+
 
         protected override void OnInitialized()
         {
@@ -66,22 +56,39 @@ namespace EventulaEntranceClient.Pages
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
+
+            StringValues accessCode;
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out accessCode))
             {
                 if (!ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                 {
                     NavigationManager.NavigateTo("");
                 }
+
+                AccessCode = accessCode;
+
+                await InvokeAsync(StateHasChanged);
             }
             else
             {
                 NavigationManager.NavigateTo("");
             }
 
+            var token = await EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
 
-            if (firstRender)
+            if(string.IsNullOrEmpty(token))
             {
-                await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+                NavigationManager.NavigateTo($"settings?ac={accessCode}");
+            }
+            else
+            {
+                
+                
+                if (firstRender)
+                {
+                    await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+                }
             }
         }
 
@@ -103,51 +110,14 @@ namespace EventulaEntranceClient.Pages
             Logger.LogInformation($"QR Code found {qrCode}");
             if (!string.IsNullOrEmpty(qrCode))
             {
-                using var httpClient = HttpClientFactory.CreateClient(nameof(Management));
 
-                await SetXcsrfHeader(httpClient);
-                SetDefaultHeaders(httpClient, await TokenService.RetrieveTokenAsync());
-
-                var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
-                var content = await getResult.Content.ReadAsStringAsync();
-
-               var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if(ticketRequest != null)
+                var ticketRequest = await EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
+                if (ticketRequest != null)
                 {
                     TicketRequests.Add(ticketRequest);
                     await InvokeAsync(StateHasChanged);
                 }
             }
-        }
-
-        private async Task SetXcsrfHeader(HttpClient httpClient)
-        {
-            var csrfCookieUrl = new Uri(httpClient.BaseAddress, _CsrfCookieUrl);
-
-
-            var csrfCookies = Cookies.GetCookies(csrfCookieUrl);
-
-            var csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
-
-            if (csrfToken == null)
-            {
-                var getCsrfResult = await httpClient.GetAsync(_CsrfCookieUrl);
-                csrfCookies = Cookies.GetCookies(csrfCookieUrl);
-                csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
-            }
-
-            if (csrfToken != null)
-            {
-                httpClient.DefaultRequestHeaders.Add("X-CSRF-Token", csrfToken.Value);
-            }
-        }
-
-        private static void SetDefaultHeaders(HttpClient httpClient, string token)
-        {
-            var requestToken = token.Split('|').Last();
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", requestToken);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         #region IDisposable

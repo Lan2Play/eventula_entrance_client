@@ -42,39 +42,41 @@ jobs:
       shell: bash
     - name: Build
       run: electronize build /target win
+    - name: rename
+      run: mv ./bin/Desktop/EventulaEntranceClient Setup*.exe ./bin/Desktop/EventulaEntranceClient_Setup.exe
+      shell: bash
     - name: upload artifact windows client x64 msi
       uses: actions/upload-artifact@v2
       with:
         name: EventulaEntranceClient
-        path: ./bin/Desktop/EventulaEntranceClient Setup*.exe
+        path: ./bin/Desktop/EventulaEntranceClient_Setup.exe
         retention-days: 1
 
-  # release:
-  #    name: Release
-  #    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-  #    needs:
-  #    - build_windows_client_x64
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #    - name: get artifacts
-  #      uses: actions/download-artifact@v2
-  #    - name: Display structure of downloaded files
-  #      run: ls -R
-  #    - name: Release
-  #      if: ${{ !(contains(github.ref, '-beta')) }}
-  #      uses: softprops/action-gh-release@v1
-  #      with:
-  #       files: |
-  #         ./EventulaEntranceClient/EventulaEntranceClient.exe
-  #      env:
-  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #    - name: pre Release
-  #      if: ${{ (contains(github.ref, '-beta')) }}
-  #      uses: softprops/action-gh-release@v1
-  #      with:
-  #       prerelease: true
-  #       files: |
-  #         ./EventulaEntranceClient/EventulaEntranceClient.exe
-  #      env:
-  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
+  release:
+     name: Release
+     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+     needs:
+     - build_windows_client_x64
+     runs-on: ubuntu-latest
+     steps:
+     - name: get artifacts
+       uses: actions/download-artifact@v2
+     - name: Display structure of downloaded files
+       run: ls -R
+     - name: Release
+       if: ${{ !(contains(github.ref, '-beta')) }}
+       uses: softprops/action-gh-release@v1
+       with:
+        files: |
+          ./EventulaEntranceClient/EventulaEntranceClient_Setup.exe
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     - name: pre Release
+       if: ${{ (contains(github.ref, '-beta')) }}
+       uses: softprops/action-gh-release@v1
+       with:
+        prerelease: true
+        files: |
+          ./EventulaEntranceClient/EventulaEntranceClient_Setup.exe
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

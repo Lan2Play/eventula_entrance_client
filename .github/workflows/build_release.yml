@@ -43,8 +43,9 @@ jobs:
     - name: Build
       run: electronize build /target win
     - name: rename
-      run: mv ./bin/Desktop/EventulaEntranceClient Setup*.exe ./bin/Desktop/EventulaEntranceClient_Setup.exe
-      shell: bash
+      run: Rename-Item -Path "EventulaEntranceClient Setup*.exe" -NewName "EventulaEntranceClient_Setup.exe"
+      shell: pwsh
+      working-directory: ${{ github.workspace }}\bin\Desktop
     - name: upload artifact windows client x64 msi
       uses: actions/upload-artifact@v2
       with:

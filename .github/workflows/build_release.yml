@@ -40,22 +40,14 @@ jobs:
     - name: set client version
       run: 'sed -i "s|\"buildVersion\": \".*\"|\"buildVersion\": \"$EVENTULAENTRANCECLIENTVER\"|g" electron.manifest.json'
       shell: bash
-
     - name: Build
       run: electronize build /target win
-    - name: find
-      run: find -name '*.exe' .
-
-  
-
-
-
-  #   - name: upload artifact windows client x64 msi
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: EventulaEntranceClient
-  #       path: ./Setup/bin/Release/
-  #       retention-days: 1
+    - name: upload artifact windows client x64 msi
+      uses: actions/upload-artifact@v2
+      with:
+        name: EventulaEntranceClient
+        path: ./bin/Desktop/EventulaEntranceClient Setup*.exe
+        retention-days: 1
 
   # release:
   #    name: Release

@@ -21,7 +21,6 @@ builder.Services.AddSingleton<IDataStore, LiteDbDataStore>();
 builder.Services.AddSingleton<ProtectionService>();
 builder.Services.AddSingleton<IBarcodeService, ZXingBarcodeService>();
 
-
 builder.Services.AddScoped<EventulaTokenService>();
 builder.Services.AddScoped<EventulaApiService>();
 
@@ -33,7 +32,6 @@ builder.Services.AddHttpClient(nameof(EventulaApiService), client =>
     var cookieContainer = sp.GetRequiredService<CookieContainer>();
     return new HttpClientHandler { CookieContainer = cookieContainer };
 });
-
 
 var app = builder.Build();
 
@@ -63,7 +61,6 @@ app.MapPost("/adduserbyticket", async (http) =>
 
     http.Response.StatusCode = 200;
 });
-
 
 app.UseHttpsRedirection();
 

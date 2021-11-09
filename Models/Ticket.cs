@@ -1,6 +1,4 @@
 ﻿using EventulaEntranceClient.Storage;
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace EventulaEntranceClient.Models

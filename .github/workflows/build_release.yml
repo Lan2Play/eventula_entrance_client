@@ -9,9 +9,8 @@ on:
     # - '!**'
 
 env:
-  AZURE_WEBAPP_NAME: DotNetWeb
-  AZURE_WEBAPP_PACKAGE_PATH: '.' # Set this to the path to your web app project, defaults to the repository root:
-  DOTNET_VERSION: '6.0.100' # The .NET SDK version to use
+  DOTNET6_VERSION: '6.0.100' # The .NET SDK version to use
+  DOTNET5_VERSION: '6.0.100' # The .NET SDK version to use
 
 jobs:
 
@@ -20,10 +19,14 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: ${{ env.DOTNET5_VERSION }}
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET6_VERSION }}
     - name: Install dependencies
       run: dotnet tool install ElectronNET.CLI -g
     - name: get Version

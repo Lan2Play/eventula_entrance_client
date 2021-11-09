@@ -65,9 +65,9 @@ namespace EventulaEntranceClient.Pages
 
             ParticipantSignInPlaces.AddRange(savedParticipants);
 
-            for(int i = 1; i <= _ParticipantSignInPlacesCount; i++ )
+            for (int i = 1; i <= _ParticipantSignInPlacesCount; i++)
             {
-                if(!ParticipantSignInPlaces.Any(a=> a.Id == i))
+                if (!ParticipantSignInPlaces.Any(a => a.Id == i))
                 {
                     var updatedParticipant = new ParticipantSignInPlace()
                     {
@@ -79,7 +79,7 @@ namespace EventulaEntranceClient.Pages
                 }
             }
 
-            foreach(var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount))
+            foreach (var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount))
             {
                 ParticipantSignInPlaces.Remove(removeParticipant);
                 _DataStore.Delete(removeParticipant);
@@ -128,7 +128,7 @@ namespace EventulaEntranceClient.Pages
 
         private async void Trigger(object sender, EventArgs eventArgs)
         {
-             await CaptureFrame();
+            await CaptureFrame();
         }
 
         private async Task CaptureFrame()
@@ -163,7 +163,7 @@ namespace EventulaEntranceClient.Pages
 
             var openPlace = FindEmptySignInPlace();
 
-            if(openPlace == null)
+            if (openPlace == null)
             {
                 return;
             }
@@ -178,9 +178,9 @@ namespace EventulaEntranceClient.Pages
 
         private ParticipantSignInPlace FindEmptySignInPlace()
         {
-            foreach(var signInPlace in ParticipantSignInPlaces.OrderBy(a=> a.Id))
+            foreach (var signInPlace in ParticipantSignInPlaces.OrderBy(a => a.Id))
             {
-                if(signInPlace.Participant == null)
+                if (signInPlace.Participant == null)
                 {
                     return signInPlace;
                 }
@@ -192,7 +192,7 @@ namespace EventulaEntranceClient.Pages
 
         private async Task AddParticipantAsync(Participant participant)
         {
-            if(participant == null)
+            if (participant == null)
             {
                 return;
             }

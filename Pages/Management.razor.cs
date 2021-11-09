@@ -54,6 +54,8 @@ namespace EventulaEntranceClient.Pages
         {
             _BackgroundTrigger.Trigger += Trigger;
             _UiNotifyService.NewParticipant += OnNewParticipant;
+
+            Participants.AddRange(_DataStore.Load<Participant>());
         }
 
         private async void OnNewParticipant(object sender, Participant participant)

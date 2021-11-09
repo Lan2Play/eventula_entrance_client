@@ -51,9 +51,13 @@ namespace EventulaEntranceClient.Pages
             _UiNotifyService.NewParticipant += OnNewParticipant;
         }
 
-        private void OnNewParticipant(object sender, Participant e)
+        private async void OnNewParticipant(object sender, Participant participant)
         {
-            throw new NotImplementedException();
+            if (participant != null)
+            {
+                Participants.Add(participant);
+                await InvokeAsync(StateHasChanged);
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)

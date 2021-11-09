@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace EventulaEntranceClient.Storage
 {
     public interface IDataStore : IDisposable
@@ -8,5 +6,7 @@ namespace EventulaEntranceClient.Storage
         void AddOrUpdate<T>(T data) where T : IStoreObject;
 
         IEnumerable<T> Load<T>() where T : IStoreObject;
+
+        T LoadById<T>(int id) where T : IStoreObject;
     }
 }

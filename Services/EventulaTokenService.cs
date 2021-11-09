@@ -1,19 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
-using System;
-using System.Threading.Tasks;
+﻿using EventulaEntranceClient.Models;
+using EventulaEntranceClient.Storage;
 
 namespace EventulaEntranceClient.Services
 {
     public class EventulaTokenService
     {
-        private const string _TokenIdentifier = "eventulatoken";
-        private readonly IJSRuntime _JSRuntime;
+        private const int _TokenIdentifier = 1337;
+        private readonly IDataStore _DataStore;
         private readonly ILogger<EventulaTokenService> _Logger;
 
-        public EventulaTokenService(IJSRuntime jSRuntime, ILogger<EventulaTokenService> logger)
+        public EventulaTokenService(IDataStore dataStore, ILogger<EventulaTokenService> logger)
         {
-            _JSRuntime = jSRuntime;
+            _DataStore = dataStore;
             _Logger = logger;
         }
 
@@ -21,8 +19,11 @@ namespace EventulaEntranceClient.Services
         {
             try
             {
-              
-                await _JSRuntime.InvokeVoidAsync("localStorage.setItem", _TokenIdentifier, token);
+                _DataStore.AddOrUpdate(new EventulaToken()
+                {
+                    Id = _TokenIdentifier,
+                    Token = token
+                }) ;
 
                 return true;
             }
@@ -36,7 +37,7 @@ namespace EventulaEntranceClient.Services
 
         public async Task<string> RetrieveTokenAsync()
         {
-            return await _JSRuntime.InvokeAsync<string>("localStorage.getItem", _TokenIdentifier);
+            return _DataStore.LoadById<EventulaToken>(_TokenIdentifier)?.Token;
         }
     }
 }

@@ -53,7 +53,9 @@ app.MapPost("/adduserbyticket", async (http) =>
     var eventulaApiService = http.RequestServices.GetService<EventulaApiService>();
     var ticket = await eventulaApiService.RequestTicket(body).ConfigureAwait(false);
 
-    // TODO store participant
+    // Store participant
+    var dataStore = http.RequestServices.GetService<IDataStore>();
+    dataStore.AddOrUpdate(ticket.Participant);
 
     // Notify UI
     var uiNotifyService = http.RequestServices.GetService<UiNotifyService>();

@@ -8,5 +8,7 @@ namespace EventulaEntranceClient.Storage
         IEnumerable<T> Load<T>() where T : IStoreObject;
 
         T LoadById<T>(int id) where T : IStoreObject;
+
+        bool Delete<T>(T data) where T : IStoreObject;
     }
 }

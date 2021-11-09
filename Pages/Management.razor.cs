@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
 using EventulaEntranceClient.Models;
-using EventulaEntranceClient.Storage;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -45,6 +44,11 @@ namespace EventulaEntranceClient.Pages
 
         #endregion
 
+        private const int _ParticipantSignInPlacesCount = 15;
+
+        public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
+
+
         public List<Participant> Participants { get; set; } = new List<Participant>();
 
         private string AccessCode { get; set; }
@@ -56,15 +60,35 @@ namespace EventulaEntranceClient.Pages
             _UiNotifyService.NewParticipant += OnNewParticipant;
 
             Participants.AddRange(_DataStore.Load<Participant>());
+
+            var savedParticipants = _DataStore.Load<ParticipantSignInPlace>();
+
+            ParticipantSignInPlaces.AddRange(savedParticipants);
+
+            for(int i = 1; i <= _ParticipantSignInPlacesCount; i++ )
+            {
+                if(!ParticipantSignInPlaces.Any(a=> a.Id == i))
+                {
+                    var updatedParticipant = new ParticipantSignInPlace()
+                    {
+                        Id = i,
+                    };
+
+                    _DataStore.AddOrUpdate(updatedParticipant);
+                    ParticipantSignInPlaces.Add(updatedParticipant);
+                }
+            }
+
+            foreach(var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount))
+            {
+                ParticipantSignInPlaces.Remove(removeParticipant);
+                _DataStore.Delete(removeParticipant);
+            }
         }
 
         private async void OnNewParticipant(object sender, Participant participant)
         {
-            if (participant != null)
-            {
-                Participants.Add(participant);
-                await InvokeAsync(StateHasChanged);
-            }
+            await AddParticipantAsync(participant).ConfigureAwait(false);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -125,22 +149,68 @@ namespace EventulaEntranceClient.Pages
                 if (ticketRequest?.Participant != null)
                 {
                     _DataStore.AddOrUpdate(ticketRequest.Participant);
-
-                    var oldParticipant = Participants.FirstOrDefault(x => x.Id == ticketRequest.Participant.Id);
-                    if (oldParticipant == null)
-                    {
-                        Participants.Add(ticketRequest.Participant);
-                    }
-                    else
-                    {
-                        var oldId = Participants.IndexOf(oldParticipant);
-                        Participants.Remove(oldParticipant);
-                        Participants.Insert(oldId, ticketRequest.Participant);
-                    }
-
-                    await InvokeAsync(StateHasChanged);
+                    await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
                 }
             }
+        }
+
+        public void AddToSignInPlace(Participant participant)
+        {
+            if (participant == null)
+            {
+                return;
+            }
+
+            var openPlace = FindEmptySignInPlace();
+
+            if(openPlace == null)
+            {
+                return;
+            }
+
+            openPlace.Participant = participant;
+
+            _DataStore.AddOrUpdate(openPlace);
+
+            Participants.Remove(participant);
+            _DataStore.Delete(participant);
+        }
+
+        private ParticipantSignInPlace FindEmptySignInPlace()
+        {
+            foreach(var signInPlace in ParticipantSignInPlaces.OrderBy(a=> a.Id))
+            {
+                if(signInPlace.Participant == null)
+                {
+                    return signInPlace;
+                }
+            }
+
+            return null;
+        }
+
+
+        private async Task AddParticipantAsync(Participant participant)
+        {
+            if(participant == null)
+            {
+                return;
+            }
+
+
+            var oldParticipant = Participants.FirstOrDefault(x => x.Id == participant.Id);
+            if (oldParticipant == null)
+            {
+                Participants.Add(participant);
+            }
+            else
+            {
+                var oldId = Participants.IndexOf(oldParticipant);
+                Participants.Remove(oldParticipant);
+                Participants.Insert(oldId, participant);
+            }
+
+            await InvokeAsync(StateHasChanged);
         }
 
         #region IDisposable

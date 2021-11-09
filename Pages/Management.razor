@@ -11,13 +11,21 @@
 <div class="row">
     <div class="col-10">
         <div class="row row-cols-1 row-cols-md-3 g-4">
-            @foreach (var participant in Participants)
+            @foreach (var signInPlace in ParticipantSignInPlaces)
             {
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">@participant.User.Firstname @participant.User.Surname</h5>
-                            <p class="card-text">Fahrrad</p>
+                            @if (signInPlace.Participant != null)
+                            {
+                                <h5 class="card-title">@signInPlace.Participant.User.Firstname @signInPlace.Participant.User.Surname</h5>
+                                <p class="card-text">Fahrrad</p>
+                            }
+                            else
+                            {
+                                <h5 class="card-title">Nicht belegt</h5>
+                                <p class="card-text"></p>
+                            }
                         </div>
                     </div>
                 </div>
@@ -25,13 +33,11 @@
         </div>
     </div>
     <div class="col-2">
-        <div class="card" style="width: 18rem;">
-            <ul class="list-group list-group-flush">
-                @foreach (var participant in Participants)
+        <div class="d-grid gap-1">
+            @foreach (var participant in Participants)
                 {
-                    <li class="list-group-item">@participant.User.Firstname @participant.User.Surname</li>
-                }
-            </ul>
+                    <button class="btn btn-primary" type="button" onclick="@(() => AddToSignInPlace(participant))">@participant.User.Firstname @participant.User.Surname</button>
+                }    
         </div>
     </div>
 </div>

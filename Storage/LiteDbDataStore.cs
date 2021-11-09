@@ -37,6 +37,11 @@ namespace EventulaEntranceClient.Storage
             return _LiteDatabase.GetCollection<T>().FindById(new BsonValue(id));
         }
 
+        public bool Delete<T>(T data) where T : IStoreObject
+        {
+            return _LiteDatabase.GetCollection<T>().Delete(new BsonValue(data.Id));
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_DisposedValue)
@@ -66,6 +71,6 @@ namespace EventulaEntranceClient.Storage
             System.GC.SuppressFinalize(this);
         }
 
-       
+        
     }
 }

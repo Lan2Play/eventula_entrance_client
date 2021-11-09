@@ -78,7 +78,7 @@ namespace EventulaEntranceClient.Pages
 
             var token = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
 
-            if(string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
                 _NavigationManager.NavigateTo($"settings?ac={accessCode}");
             }

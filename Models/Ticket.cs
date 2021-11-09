@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventulaEntranceClient.Storage;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -19,7 +20,7 @@ namespace EventulaEntranceClient.Models
         public Participant Participant { get; set; }
     }
 
-    public class Participant
+    public class Participant : IStoreObject
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }

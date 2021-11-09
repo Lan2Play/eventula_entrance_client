@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
 using EventulaEntranceClient.Models;
+using EventulaEntranceClient.Storage;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -37,6 +38,10 @@ namespace EventulaEntranceClient.Pages
 
         [Inject]
         private EventulaTokenService _EventulaTokenService { get; set; }
+
+
+        [Inject]
+        private IDataStore _DataStore { get; set; }
 
         #endregion
 
@@ -117,7 +122,20 @@ namespace EventulaEntranceClient.Pages
                 var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
                 if (ticketRequest?.Participant != null)
                 {
-                    Participants.Add(ticketRequest.Participant);
+                    _DataStore.AddOrUpdate(ticketRequest.Participant);
+
+                    var oldParticipant = Participants.FirstOrDefault(x => x.Id == ticketRequest.Participant.Id);
+                    if (oldParticipant == null)
+                    {
+                        Participants.Add(ticketRequest.Participant);
+                    }
+                    else
+                    {
+                        var oldId = Participants.IndexOf(oldParticipant);
+                        Participants.Remove(oldParticipant);
+                        Participants.Insert(oldId, ticketRequest.Participant);
+                    }
+
                     await InvokeAsync(StateHasChanged);
                 }
             }

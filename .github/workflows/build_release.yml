@@ -4,9 +4,8 @@ on:
   push:
     branches:
     - blazor_test
-    tags: [ v**]
-    paths:
-      - *
+    # tags: [ v**]
+    # paths:
     # - '!**'
 
 env:

@@ -1,4 +1,5 @@
 ﻿@page "/management"
+@using EventulaEntranceClient.Pages.Components
 
 @implements IDisposable
 
@@ -13,7 +14,9 @@
 		<div class="row row-cols-1 row-cols-md-3 g-4">
 			@foreach (var signInPlace in ParticipantSignInPlaces)
 			{
-				<div class="col">
+				<ParticipantSignInPlaceComponent SignInPlace="@signInPlace" ></ParticipantSignInPlaceComponent>
+
+				@*<div class="col">
 					<div class="card">
 						<div class="card-body">
 							@if (signInPlace.Participant != null)
@@ -28,7 +31,7 @@
 							}
 						</div>
 					</div>
-				</div>
+				</div>*@
 			}
 		</div>
 	</div>

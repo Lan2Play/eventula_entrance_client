@@ -80,3 +80,25 @@ a, .btn-link {
     background-repeat: no-repeat;
     opacity: 0.5;
 }
+
+.progress {
+    position: relative;
+}
+
+.progress-bar {
+    overflow: hidden;
+    z-index: 2;
+}
+
+.progress-label {
+    color: #1861ac;
+    position: absolute;
+    display: flex;
+    left: 0;
+    height: 100%;
+    top: 0;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1;
+}

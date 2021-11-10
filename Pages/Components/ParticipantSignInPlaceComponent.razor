@@ -1,0 +1,61 @@
+﻿<div class="col">
+	<div class="card">
+		<div class="card-body">
+			@if (SignInPlace.Participant != null)
+			{
+				<div class="d-flex justify-content-start">
+					<div class="flex-shrink-0">
+						<img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="64" height="64">
+					</div>
+					<div class="flex-grow-1 overflow-hidden text-start m-2">
+						<p class="m-0 text-nobreak text-nowrap text-truncate">@SignInPlace.Participant.User.Firstname @SignInPlace.Participant.User.Surname</p>
+						<p class="m-0 text-muted text-nobreak text-nowrap text-truncate">@@@SignInPlace.Participant.User.Steamname</p>
+					</div>
+				</div>
+			}
+			else
+			{
+				<div style="height: 64px;"> 
+					<h5 class="card-title">Nicht belegt</h5>
+				</div>
+			}
+
+
+			<div class="row mb-3">
+				<div class="col-auto">
+					<button class="btn btn-primary" type="button" onclick="@(() => StartTimer())">
+						<span class="oi oi-timer" title="timer" aria-hidden="true"></span>
+					</button>
+				</div>
+
+				<div class="col">
+					<div class="progress h-100">
+						<div class="progress-label">@TimeLeft</div>
+						<div class="progress-bar" role="progressbar" style="@($"width: {Progress}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="row">
+				<div class="col">
+					<button class="btn btn-primary w-100" type="button">
+						<span class="oi oi-timer" title="timer" aria-hidden="true">Bezahlt</span>
+					</button>
+				</div>
+
+				<div class="col">
+					<button class="btn btn-primary w-100" type="button">
+						<span class="oi oi-timer" title="timer" aria-hidden="true">2G Check</span>
+					</button>
+				</div>
+
+				<div class="col">
+					<button class="btn btn-primary w-100" type="button">
+						<span class="oi oi-timer" title="timer" aria-hidden="true">SignIn</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

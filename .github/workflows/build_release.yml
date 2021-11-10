@@ -10,7 +10,7 @@ on:
 
 env:
   DOTNET6_VERSION: '6.0.100' # The .NET SDK version to use
-  #DOTNET5_VERSION: '5.0.403' # The .NET SDK version to use
+  DOTNET5_VERSION: '5.0.403' # The .NET SDK version to use
 
 jobs:
 

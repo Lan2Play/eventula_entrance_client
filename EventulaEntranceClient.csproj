@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<RollForward>Major</RollForward>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="ElectronNET.API" Version="13.5.1" />

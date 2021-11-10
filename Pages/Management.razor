@@ -1,0 +1,57 @@
+﻿@page "/management"
+
+@implements IDisposable
+
+
+<h1>Hello, world!</h1>
+
+<video id="videoFeed" width="1920" height="1080" style="margin-left:-5000px" />
+
+
+<div class="row">
+	<div class="col-8 col-md-9 col-lg-10">
+		<div class="row row-cols-1 row-cols-md-3 g-4">
+			@foreach (var signInPlace in ParticipantSignInPlaces)
+			{
+				<div class="col">
+					<div class="card">
+						<div class="card-body">
+							@if (signInPlace.Participant != null)
+							{
+								<h5 class="card-title">@signInPlace.Participant.User.Firstname @signInPlace.Participant.User.Surname</h5>
+								<p class="card-text">Fahrrad</p>
+							}
+							else
+							{
+								<h5 class="card-title">Nicht belegt</h5>
+								<p class="card-text"></p>
+							}
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+	<div class="col-4 col-md-3 col-lg-2">
+		<div class="d-grid gap-1">
+			@foreach (var participant in Participants)
+			{
+				<button class="btn btn-outline-primary" type="button" onclick="@(() => AddToSignInPlace(participant))">
+					<div class="d-flex justify-content-start">
+						<div class="flex-shrink-0">
+							<img class="card-img" src="@participant.User.Avatar" alt="@participant.User.Steamname" width="64" height="64">
+						</div>
+						<div class="flex-grow-1 text-start m-2">
+							<p class="m-0 text-break">@participant.User.Firstname @participant.User.Surname</p>
+							<p class="m-0 text-muted text-break">@@@participant.User.Steamname</p>
+						</div>
+					</div>
+				</button>
+			}
+		</div>
+	</div>
+</div>
+
+<footer class="fixed-bottom text-center footer">
+	<a href="settings/?ac=@AccessCode">Settings</a>
+</footer>

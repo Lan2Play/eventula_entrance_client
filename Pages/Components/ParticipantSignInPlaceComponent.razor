@@ -11,6 +11,10 @@
 						<p class="m-0 text-nobreak text-nowrap text-truncate">@SignInPlace.Participant.User.Firstname @SignInPlace.Participant.User.Surname</p>
 						<p class="m-0 text-muted text-nobreak text-nowrap text-truncate">@@@SignInPlace.Participant.User.Steamname</p>
 					</div>
+
+					<div class="flex-shrink-0 mt-2">
+						<p class="m-0 text-nobreak text-nowrap text-truncate">Platz <strong>@SignInPlace.Participant.Seat.SeatName</strong></p>
+					</div>
 				</div>
 			}
 			else
@@ -30,8 +34,8 @@
 
 				<div class="col">
 					<div class="progress h-100">
-						<div class="progress-label">@TimeLeft</div>
-						<div class="progress-bar" role="progressbar" style="@($"width: {Progress}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
+						<div class="progress-label" hidden="@(Progress <= 0)">@TimeLeft</div>
+						<div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
 					</div>
 				</div>
 			</div>

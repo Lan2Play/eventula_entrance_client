@@ -17,8 +17,9 @@ namespace EventulaEntranceClient.Services
         private const string _CsrfCookieUrl = "sanctum/csrf-cookie";
         private const string _UserApiParticipantUrl = "api/admin/event/participants/{0}";
 
-        #endregion
+        private const string _UserApiParticipantSignInUrl = "api/admin/event/participants/{0}/signIn";
 
+        #endregion
 
         private readonly IHttpClientFactory _HttpClientFactory;
         private readonly ILogger<EventulaApiService> _Logger;
@@ -41,12 +42,28 @@ namespace EventulaEntranceClient.Services
             SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
+                   
             var content = await getResult.Content.ReadAsStringAsync();
 
             var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             return ticketRequest;
 
+        }
+
+        public async Task<TicketRequest> SignInParticipant(Participant participant)
+        {
+            using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
+
+            await SetXcsrfHeader(httpClient);
+            SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
+
+            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
+            var content = await getResult.Content.ReadAsStringAsync();
+
+            var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return ticketRequest;
         }
 
 

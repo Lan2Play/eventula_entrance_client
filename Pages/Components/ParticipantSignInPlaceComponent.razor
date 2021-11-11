@@ -1,4 +1,5 @@
-﻿<div class="col">
+﻿
+<div class="col">
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-start">
@@ -8,7 +9,7 @@
                 @if (SignInPlace.Participant != null)
                 {
                     <div class="flex-shrink-0">
-                        <img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="64" height="64">
+                        <img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="56" height="56">
                     </div>
                     <div class="flex-grow-1 overflow-hidden text-start m-2">
                         <p class="m-0 text-nobreak text-nowrap text-truncate">@SignInPlace.Participant.User.Firstname @SignInPlace.Participant.User.Surname</p>
@@ -45,7 +46,7 @@
                 <div class="col">
                     <div class="progress h-100">
                         <div class="progress-label" hidden="@(Progress <= 0)">@TimeLeft</div>
-                        <div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
+                        <div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress.ToString(CultureInfo.InvariantCulture)}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
                     </div>
                 </div>
             </div>
@@ -75,7 +76,7 @@
 
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-primary w-100" type="button" disabled="@SignInDisabled">
+                    <button class="btn btn-primary w-100" type="button" disabled="@SignInDisabled" onclick="@(() => SignIn())">
                         <span class="oi oi-timer" title="timer" aria-hidden="true">SignIn</span>
                     </button>
                 </div>

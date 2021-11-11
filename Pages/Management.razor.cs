@@ -128,7 +128,15 @@ namespace EventulaEntranceClient.Pages
 
         private async void Trigger(object sender, EventArgs eventArgs)
         {
-            await CaptureFrame();
+            try
+            {
+
+                await CaptureFrame();
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         private async Task CaptureFrame()

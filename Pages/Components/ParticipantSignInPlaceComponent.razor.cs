@@ -57,6 +57,8 @@ namespace EventulaEntranceClient.Pages.Components
 
         #region Properties
 
+       
+
         public bool HasNoParticipant => SignInPlace.Participant == null;
 
         public double Progress { get; set; }
@@ -101,6 +103,12 @@ namespace EventulaEntranceClient.Pages.Components
         public void StartTimer()
         {
             SignInPlace.TimerStartTime = DateTimeOffset.Now;
+            _DataStore.AddOrUpdate(SignInPlace);
+        }
+
+        public void Delete()
+        {
+            SignInPlace.Participant = null;
             _DataStore.AddOrUpdate(SignInPlace);
         }
 

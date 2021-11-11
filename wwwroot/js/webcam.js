@@ -31,3 +31,8 @@ function getFrame(src, dest) {
     let dataUrl = canvas.toDataURL("image/jpeg");
     return dataUrl;
 }
+
+
+window.PlayAudio = (elementName) => {
+    document.getElementById(elementName).play();
+}

@@ -209,6 +209,7 @@ namespace EventulaEntranceClient.Pages
             if (oldParticipant == null)
             {
                 Participants.Add(participant);
+                await _JSRuntime.InvokeAsync<string>("PlayAudio", "newParticipantSound");
             }
             else
             {

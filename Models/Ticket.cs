@@ -30,10 +30,10 @@ namespace EventulaEntranceClient.Models
         public int EventId { get; set; }
 
         [JsonPropertyName("ticket_id")]
-        public int TicketId { get; set; }
+        public int? TicketId { get; set; }
 
         [JsonPropertyName("purchase_id")]
-        public int PurchaseId { get; set; }
+        public int? PurchaseId { get; set; }
 
         [JsonPropertyName("qrcode")]
         public string QrCode { get; set; }

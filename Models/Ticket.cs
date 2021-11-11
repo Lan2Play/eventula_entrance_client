@@ -6,10 +6,10 @@ namespace EventulaEntranceClient.Models
     public class Request
     {
         [JsonPropertyName("successful")]
-        bool Successful { get; set; }
+        public bool Successful { get; set; }
 
         [JsonPropertyName("reason")]
-        string Reason { get; set; }
+        public string Reason { get; set; }
     }
 
     public class TicketRequest : Request

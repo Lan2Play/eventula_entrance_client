@@ -1,22 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using System.Net.Http;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
-using Microsoft.JSInterop;
-using Microsoft.Extensions.Logging;
-using EventulaEntranceClient;
-using EventulaEntranceClient.Shared;
 using EventulaEntranceClient.Services;
-using EventulaEntranceClient.Services.Interfaces;
-using System.Threading;
+using EventulaEntranceClient.Models;
 
 namespace EventulaEntranceClient.Pages.Components
 {
@@ -25,11 +9,15 @@ namespace EventulaEntranceClient.Pages.Components
         #region Parameters
 
         [Parameter]
-        public Models.ParticipantSignInPlace SignInPlace { get; set; }
+        public ParticipantSignInPlace SignInPlace { get; set; }
 
         #endregion
 
         #region Injects
+
+        [Inject]
+        private ILogger<ParticipantSignInPlaceComponent> _Logger { get; set; }
+
 
         [Inject]
         private IDataStore _DataStore { get; set; }
@@ -110,6 +98,37 @@ namespace EventulaEntranceClient.Pages.Components
         {
             SignInPlace.Participant = null;
             _DataStore.AddOrUpdate(SignInPlace);
+        }
+
+        public async Task SignIn()
+        {
+            try
+            {
+                // Call Eventula API
+                var result = await _EventulaApiService.SignInParticipant(SignInPlace.Participant).ConfigureAwait(false);
+
+                /*
+                if(result.Successful)
+                {
+                    // Save protocol to db
+                    var protocol = new SignInProtocol()
+                    {
+                        Participant = SignInPlace.Participant,
+                        TimerStartTime = SignInPlace.TimerStartTime,
+                        SignInCompleted = DateTimeOffset.Now,
+                    };
+
+                    _DataStore.AddOrUpdate(protocol);
+
+                    // Reset component
+                    Delete();
+                }
+                */
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError(ex, $"Error signing in participant {SignInPlace.Participant.Id}");
+            }
         }
 
         public void CountDownTimer(Object source, System.Timers.ElapsedEventArgs e)

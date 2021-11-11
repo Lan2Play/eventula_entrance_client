@@ -57,7 +57,7 @@ namespace EventulaEntranceClient.Pages.Components
 
         #region Properties
 
-       
+
 
         public bool HasNoParticipant => SignInPlace.Participant == null;
 
@@ -109,11 +109,17 @@ namespace EventulaEntranceClient.Pages.Components
         public void Delete()
         {
             SignInPlace.Participant = null;
+            SignInPlace.TimerStartTime = default;
+            SignInPlace.CoronaCheck = default;
+            SignInPlace.CoronaTestCheck = default;
+            SignInPlace.Paid = default;
+            SignInPlace.Terms = default;
             _DataStore.AddOrUpdate(SignInPlace);
         }
 
         public void CountDownTimer(Object source, System.Timers.ElapsedEventArgs e)
         {
+            var oldProgress = Progress;
             if (SignInPlace.TimerStartTime != default)
             {
 
@@ -128,7 +134,10 @@ namespace EventulaEntranceClient.Pages.Components
                 TimeLeft = FormatTimeSpan(TimeSpan.FromSeconds(_TimerTargetSeconds));
             }
 
-            InvokeAsync(StateHasChanged);
+            if (oldProgress != Progress)
+            {
+                InvokeAsync(StateHasChanged);
+            }
         }
 
         private static string FormatTimeSpan(TimeSpan timeSpan)

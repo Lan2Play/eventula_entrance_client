@@ -53,23 +53,23 @@
 
             <div class="row">
                 <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-paid" @bind="IsPaid" disabled="@IsPaidDisabled">
-                    <label class="btn btn-outline-success w-100 h-100" for="btn-check-paid">Bezahlt</label><br>
+                    <input type="checkbox" class="btn-check" id="btn-check-paid-@SignInPlace.Id" @bind="IsPaid" disabled="@IsPaidDisabled">
+                    <label class="btn btn-outline-success w-100 h-100" for="btn-check-paid-@SignInPlace.Id">Bezahlt</label><br>
                 </div>
 
                 <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-corona" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
-                    <label class="btn btn-outline-success " for="btn-check-corona">2G Nachweis</label><br>
+                    <input type="checkbox" class="btn-check" id="btn-check-corona-@SignInPlace.Id" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
+                    <label class="btn btn-outline-success " for="btn-check-corona-@SignInPlace.Id">2G Nachweis</label><br>
                 </div>
 
                 <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-coronatest" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
-                    <label class="btn btn-outline-success " for="btn-check-coronatest">Test Negativ</label><br>
+                    <input type="checkbox" class="btn-check" id="btn-check-coronatest-@SignInPlace.Id" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
+                    <label class="btn btn-outline-success " for="btn-check-coronatest-@SignInPlace.Id">Test Negativ</label><br>
                 </div>
 
                 <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-terms" @bind="IsTermsChecked" disabled="@HasNoParticipant">
-                    <label class="btn btn-outline-success " for="btn-check-terms">Terms Checked</label><br>
+                    <input type="checkbox" class="btn-check" id="btn-check-terms-@SignInPlace.Id" @bind="IsTermsChecked" disabled="@HasNoParticipant">
+                    <label class="btn btn-outline-success " for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
                 </div>
             </div>
 

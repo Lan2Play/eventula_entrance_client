@@ -93,35 +93,39 @@ namespace EventulaEntranceClient.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
-
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
+            if (firstRender)
             {
-                if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
+
+                var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
+
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
+                {
+                    if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
+                    {
+                        _NavigationManager.NavigateTo("");
+                    }
+
+                    AccessCode = accessCode;
+
+                    await InvokeAsync(StateHasChanged);
+                }
+                else
                 {
                     _NavigationManager.NavigateTo("");
                 }
 
-                AccessCode = accessCode;
+                var token = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
 
-                await InvokeAsync(StateHasChanged);
-            }
-            else
-            {
-                _NavigationManager.NavigateTo("");
-            }
-
-            var token = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(token))
-            {
-                _NavigationManager.NavigateTo($"settings?ac={accessCode}");
-            }
-            else
-            {
-                if (firstRender)
+                if (string.IsNullOrEmpty(token))
                 {
-                    await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+                    _NavigationManager.NavigateTo($"settings?ac={accessCode}");
+                }
+                else
+                {
+                    if (firstRender)
+                    {
+                        await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+                    }
                 }
             }
         }

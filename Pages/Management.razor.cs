@@ -166,7 +166,7 @@ namespace EventulaEntranceClient.Pages
             }
         }
 
-        public void AddToSignInPlace(Participant participant)
+        public async Task AddToSignInPlace(Participant participant)
         {
             if (participant == null)
             {
@@ -186,19 +186,13 @@ namespace EventulaEntranceClient.Pages
 
             Participants.Remove(participant);
             _DataStore.Delete(participant);
+
+            await InvokeAsync(StateHasChanged);
         }
 
         private ParticipantSignInPlace FindEmptySignInPlace()
         {
-            foreach (var signInPlace in ParticipantSignInPlaces.OrderBy(a => a.Id))
-            {
-                if (signInPlace.Participant == null)
-                {
-                    return signInPlace;
-                }
-            }
-
-            return null;
+            return ParticipantSignInPlaces.OrderBy(a => a.Id).FirstOrDefault(x => x.Participant == null);
         }
 
 

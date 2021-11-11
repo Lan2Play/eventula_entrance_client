@@ -102,3 +102,38 @@ a, .btn-link {
     flex-direction: column;
     z-index: 1;
 }
+
+
+.glow-shadow {
+    -webkit-animation: throb 1.5s normal ease-in;
+    animation: glow 1.5s normal ease-in;
+    border-radius: 25px;
+}
+
+@-webkit-keyframes glow {
+    0% {
+        -webkit-box-shadow: 0 0 50px 50px rgba(50, 160, 50, .1);
+    }
+
+    50% {
+        -webkit-box-shadow: 0 0 50px 0px rgba(50, 160, 50, .5);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 50px 50px rgba(50, 160, 50, 1);
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 50px rgba(50, 160, 50, .1);
+    }
+
+    50% {
+        box-shadow: 0 0 50px rgba(50, 160, 50, .5);
+    }
+
+    100% {
+        box-shadow: 0 0 50px rgba(50, 160, 50, 1);
+    }
+}

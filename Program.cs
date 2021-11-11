@@ -1,7 +1,6 @@
 using ElectronNET.API;
 using EventulaEntranceClient.Services;
 using EventulaEntranceClient.Services.Interfaces;
-using EventulaEntranceClient.Storage;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,11 +13,13 @@ builder.Services.AddServerSideBlazor();
 // Webcam pictures need to be transferred via SignalR and they need a bigger message size
 builder.Services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
 
+var pinHash = builder.Configuration.GetValue<string>("PinSha256");
+
 builder.Services.AddSingleton<CookieContainer>();
 builder.Services.AddSingleton<BackgroundTrigger>();
 builder.Services.AddSingleton<UiNotifyService>();
 builder.Services.AddSingleton<IDataStore, LiteDbDataStore>();
-builder.Services.AddSingleton<ProtectionService>();
+builder.Services.AddSingleton<ProtectionService>(sp => new ProtectionService(pinHash));
 builder.Services.AddSingleton<IBarcodeService, ZXingBarcodeService>();
 
 builder.Services.AddScoped<EventulaTokenService>();
@@ -73,6 +74,16 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+Task.Run(async () =>
+    {
+        var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+        
+        // Removes the top menu
+        browserWindow.RemoveMenu();
+
+        // Starts in fullscreen mode
+        browserWindow.SetFullScreen(true);
+    }
+);
 
 app.Run();

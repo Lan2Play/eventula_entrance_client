@@ -53,6 +53,7 @@ namespace EventulaEntranceClient.Pages
 
         private string AccessCode { get; set; }
 
+        private string AnimationClass { get; set; } = "";
 
         protected override void OnInitialized()
         {
@@ -209,6 +210,14 @@ namespace EventulaEntranceClient.Pages
                 Participants.Remove(oldParticipant);
                 Participants.Insert(oldId, participant);
             }
+
+            AnimationClass = "glow-shadow";
+
+            await InvokeAsync(StateHasChanged);
+
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+
+            AnimationClass = "";
 
             await InvokeAsync(StateHasChanged);
         }

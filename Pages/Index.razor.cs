@@ -36,7 +36,7 @@ namespace EventulaEntranceClient.Pages
 
         private void CheckAccessCodeAndNavigate(string route)
         {
-            if(AccessCode.Length < 8)
+            if(AccessCode.Length < 4)
 			{
                 return;
 			}

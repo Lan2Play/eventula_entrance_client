@@ -5,11 +5,19 @@ namespace EventulaEntranceClient.Services
 {
     public class ProtectionService
     {
-        private const string _PrivateAccessCode = "ac3fbb3474801233a338e0f27af3477773ad8772d35c87f70d9489837babb35a";
+        private string _PrivateAccessCodeHash = "ac3fbb3474801233a338e0f27af3477773ad8772d35c87f70d9489837babb35a";
      
+        public ProtectionService(string privateAccessCodeHash)
+        {
+            if(!string.IsNullOrEmpty(privateAccessCodeHash))
+            {
+                _PrivateAccessCodeHash = privateAccessCodeHash;
+            }
+        }
+
         public bool CheckPrivateAccessCodeHash(string accessCodeHash)
         {
-            return _PrivateAccessCode.Equals(accessCodeHash);
+            return _PrivateAccessCodeHash.Equals(accessCodeHash);
         }
 
         public string CalculateHash(string accessCode)

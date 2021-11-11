@@ -67,11 +67,11 @@ namespace EventulaEntranceClient.Pages.Components
 
         public bool IsPaid
         {
-            get => SignInPlace != null && SignInPlace.Paid != default || (SignInPlace.Participant != null && SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase));
+            get => SignInPlace != null && SignInPlace.Paid != default || (SignInPlace.Participant?.Purchase != null && SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase));
             set => ActionWithSave(() => SignInPlace.Paid = value ? DateTimeOffset.Now : default);
         }
 
-        public bool IsPaidDisabled => SignInPlace.Participant == null || SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase);
+        public bool IsPaidDisabled => SignInPlace.Participant?.Purchase == null || SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase);
 
         public bool IsCoronaChecked
         {

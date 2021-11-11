@@ -48,7 +48,6 @@ namespace EventulaEntranceClient.Pages
 
         public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
 
-
         public List<Participant> Participants { get; set; } = new List<Participant>();
 
         private string AccessCode { get; set; }
@@ -129,7 +128,15 @@ namespace EventulaEntranceClient.Pages
 
         private async void Trigger(object sender, EventArgs eventArgs)
         {
-            await CaptureFrame();
+            try
+            {
+
+                await CaptureFrame();
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         private async Task CaptureFrame()
@@ -198,8 +205,7 @@ namespace EventulaEntranceClient.Pages
                 return;
             }
 
-
-            var oldParticipant = Participants.FirstOrDefault(x => x.Id == participant.Id);
+            var oldParticipant = Participants.Concat(ParticipantSignInPlaces.Where(x => x != null).Select(x => x.Participant)).FirstOrDefault(x => x.Id == participant.Id);
             if (oldParticipant == null)
             {
                 Participants.Add(participant);
@@ -207,8 +213,19 @@ namespace EventulaEntranceClient.Pages
             else
             {
                 var oldId = Participants.IndexOf(oldParticipant);
-                Participants.Remove(oldParticipant);
-                Participants.Insert(oldId, participant);
+                if (oldId >= 0)
+                {
+                    Participants.Remove(oldParticipant);
+                    Participants.Insert(oldId, participant);
+                }
+                else
+                {
+                    var participantInSignInPlace = ParticipantSignInPlaces.FirstOrDefault(x => x.Participant == oldParticipant);
+                    if (participantInSignInPlace != null)
+                    {
+                        participantInSignInPlace.Participant = participant;
+                    }
+                }
             }
 
             AnimationClass = "glow-shadow";

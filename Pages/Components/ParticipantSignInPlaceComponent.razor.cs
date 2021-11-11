@@ -55,12 +55,46 @@ namespace EventulaEntranceClient.Pages.Components
             _Timer.Enabled = true;
         }
 
-
         #region Properties
+
+        public bool HasNoParticipant => SignInPlace.Participant == null;
 
         public double Progress { get; set; }
 
         public string TimeLeft { get; set; }
+
+        public bool IsPaid
+        {
+            get => SignInPlace != null && SignInPlace.Paid != default || (SignInPlace.Participant != null && SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase));
+            set => ActionWithSave(() => SignInPlace.Paid = value ? DateTimeOffset.Now : default);
+        }
+
+        public bool IsPaidDisabled => SignInPlace.Participant == null || SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase);
+
+        public bool IsCoronaChecked
+        {
+            get => SignInPlace != null && SignInPlace.CoronaCheck != default;
+            set => ActionWithSave(() => SignInPlace.CoronaCheck = value ? DateTimeOffset.Now : default);
+        }
+
+        public bool IsCoronaTestChecked
+        {
+            get => SignInPlace != null && SignInPlace.CoronaTestCheck != default;
+            set => ActionWithSave(() => SignInPlace.CoronaTestCheck = value ? DateTimeOffset.Now : default);
+        }
+
+        public bool IsCoronaTestDisabled => SignInPlace.Participant == null || Progress < 100;
+
+        public bool IsTermsChecked
+        {
+            get => SignInPlace != null && SignInPlace.Terms != default;
+            set => ActionWithSave(() => SignInPlace.Terms = value ? DateTimeOffset.Now : default);
+        }
+
+        public bool SignInDisabled => !IsPaid
+                                   || !IsCoronaChecked
+                                   || !IsCoronaTestChecked
+                                   || !IsTermsChecked;
 
         #endregion
 
@@ -92,6 +126,12 @@ namespace EventulaEntranceClient.Pages.Components
         private static string FormatTimeSpan(TimeSpan timeSpan)
         {
             return timeSpan.ToString(@"mm\:ss");
+        }
+
+        private void ActionWithSave(Action action)
+        {
+            action();
+            _DataStore.AddOrUpdate(SignInPlace);
         }
     }
 }

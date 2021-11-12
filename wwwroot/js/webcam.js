@@ -13,8 +13,6 @@
             //mirror image
             video.style.webkitTransform = "scaleX(-1)";
             video.style.transform = "scaleX(-1)";
-            video.style.visibility = "collapse"
-            video.style.position = "fixed"
         });
     }
 }

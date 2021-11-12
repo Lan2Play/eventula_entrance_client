@@ -5,7 +5,6 @@
 
 <div class="@AnimationClass">
 
-    <video id="videoFeed" width="1920" height="1080" style="margin-left:-5000px" />
     <audio id="newParticipantSound" src="/audio/mixkit-elevator-tone-2863.wav" />
 
     <div class="row">
@@ -29,7 +28,9 @@
                     </button>
                 }
             </div>
-            <hr>
+            <hr />
+              <video id="videoFeed" width="1920" height="1080" />
+            <hr />
             <div class="d-grid gap-1">
                 @foreach (var participant in Participants)
                 {

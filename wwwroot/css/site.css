@@ -14,6 +14,12 @@ a, .btn-link {
     color: #0071c1;
 }
 
+video {
+    /* override other styles to make responsive */
+    width: 100% !important;
+    height: auto !important;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

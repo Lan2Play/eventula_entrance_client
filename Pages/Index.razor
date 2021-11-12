@@ -3,54 +3,54 @@
 <div class="row h-100 login-page">
 	<div class="col align-self-center">
 		<div class="d-flex flex-column justify-content-center align-items-center">
-			<form @onsubmit=Enter class="text-center mb-3">
+			<div class="text-center mb-3">
 
 				<div class="d-flex justify-content-center">
-					<input type="password" id="secret" @bind="@AccessCode" class="form-control border-primary shadow-none m-2 mb-3 lg-font" placeholder="Zugangscode">
+					<input type="password" @bind="@AccessCode" class="form-control border-primary shadow-none m-2 mb-3 lg-font" placeholder="Zugangscode">
 				</div>
 
 				<div class="d-flex justify-content-center">
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(7)">7</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(7)">7</button>
 					</div>
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(8)">8</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(8)">8</button>
 					</div>
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(9)">9</button>
-					</div>
-				</div>
-
-				<div class="d-flex justify-content-center">
-					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(4)">4</button>
-					</div>
-					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(5)">5</button>
-					</div>
-					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(6)">6</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(9)">9</button>
 					</div>
 				</div>
 
 				<div class="d-flex justify-content-center">
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(1)">1</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(4)">4</button>
 					</div>
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(2)">2</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(5)">5</button>
 					</div>
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(3)">3</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(6)">6</button>
 					</div>
 				</div>
 
 				<div class="d-flex justify-content-center">
 					<div class="m-2">
-						<button class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(0)">0</button>
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(1)">1</button>
+					</div>
+					<div class="m-2">
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(2)">2</button>
+					</div>
+					<div class="m-2">
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(3)">3</button>
 					</div>
 				</div>
-			</form>
+
+				<div class="d-flex justify-content-center">
+					<div class="m-2">
+						<button type="button" class="btn btn-outline-primary btn-block shadow-none lg-font btn-key" @onclick="() => AddToCode(0)">0</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 

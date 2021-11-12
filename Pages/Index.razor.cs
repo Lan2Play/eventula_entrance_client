@@ -1,6 +1,5 @@
 using EventulaEntranceClient.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -8,25 +7,38 @@ namespace EventulaEntranceClient.Pages
     {
         #region Injects 
 
-        [Inject] 
+        [Inject]
         private ILogger<Index> _Logger { get; set; }
-        
+
         [Inject]
         private NavigationManager _NavigationManager { get; set; }
-        
+
         [Inject]
         private ProtectionService _ProtectionService { get; set; }
 
         #endregion
 
+        private string _AccessCode = string.Empty;
 
-        public string AccessCode { get; set; } = string.Empty;
+        public string AccessCode
+        {
+            get
+            {
+                return _AccessCode;
+            }
+            set
+            {
+                _AccessCode = value;
+                CheckAccessCodeManagement();
+            }
+        }
 
         public bool ErrorHidden { get; set; } = true;
 
         protected void AddToCode(int code)
         {
             AccessCode += code;
+            CheckAccessCodeManagement();
         }
 
         protected void CheckAccessCodeManagement()
@@ -36,10 +48,10 @@ namespace EventulaEntranceClient.Pages
 
         private void CheckAccessCodeAndNavigate(string route)
         {
-            if(AccessCode.Length < 4)
-			{
+            if (AccessCode.Length < 4)
+            {
                 return;
-			}
+            }
 
             ErrorHidden = true;
 
@@ -59,11 +71,6 @@ namespace EventulaEntranceClient.Pages
         protected async void CloseAlert()
         {
             ErrorHidden = true;
-        }
-
-        private void Enter()
-        {
-            CheckAccessCodeManagement();
         }
     }
 }

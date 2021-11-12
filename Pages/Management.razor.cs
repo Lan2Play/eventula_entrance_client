@@ -172,6 +172,7 @@ namespace EventulaEntranceClient.Pages
 
             if (!_LastTicket.Equals(qrCode, StringComparison.OrdinalIgnoreCase))
             {
+                _LastTicket = qrCode;
                 LastTicketNr = string.IsNullOrEmpty(qrCode) ? _NoTicketFound : qrCode;
                 await InvokeAsync(StateHasChanged);
             }

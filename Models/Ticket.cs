@@ -1,4 +1,5 @@
-﻿using EventulaEntranceClient.Storage;
+﻿using EventulaEntranceClient.Converter;
+using EventulaEntranceClient.Storage;
 using System.Text.Json.Serialization;
 
 namespace EventulaEntranceClient.Models
@@ -48,7 +49,8 @@ namespace EventulaEntranceClient.Models
         //public int StaffFreeAssignedBy { get; set; }
 
         [JsonPropertyName("signed_in")]
-        public int SignedIn { get; set; }
+        [JsonConverter(typeof(BooleanJsonConverter))]
+        public bool SignedIn { get; set; }
 
         [JsonPropertyName("credit_applied")]
         public int CreditApplied { get; set; }

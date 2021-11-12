@@ -81,7 +81,7 @@ namespace EventulaEntranceClient.Pages
                 }
             }
 
-            foreach (var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount))
+            foreach (var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount).ToList())
             {
                 ParticipantSignInPlaces.Remove(removeParticipant);
                 _DataStore.Delete(removeParticipant);

@@ -112,8 +112,8 @@ namespace EventulaEntranceClient.Pages.Components
                 // Call Eventula API
                 var result = await _EventulaApiService.SignInParticipant(SignInPlace.Participant).ConfigureAwait(false);
 
-                /*
-                if(result.Successful)
+
+                if (result.Successful)
                 {
                     // Save protocol to db
                     var protocol = new SignInProtocol()
@@ -128,7 +128,6 @@ namespace EventulaEntranceClient.Pages.Components
                     // Reset component
                     Delete();
                 }
-                */
             }
             catch (Exception ex)
             {

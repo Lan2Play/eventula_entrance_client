@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using EventulaEntranceClient.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -23,9 +21,9 @@ namespace EventulaEntranceClient.Pages
 
         public string EventulaToken;
 
-        protected async Task SaveToken()
+        protected void SaveToken()
         {
-            if (await _EventulaTokenService.SaveTokenAsync(EventulaToken).ConfigureAwait(false))
+            if (_EventulaTokenService.SaveToken(EventulaToken))
             {
                 _NavigationManager.NavigateTo("");
             }
@@ -35,12 +33,12 @@ namespace EventulaEntranceClient.Pages
             }
         }
 
-        protected async void Submit()
+        protected void Submit()
         {
-            await SaveToken().ConfigureAwait(false);
+            SaveToken();
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        protected override void OnAfterRender(bool firstRender)
         {
             var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
@@ -56,9 +54,9 @@ namespace EventulaEntranceClient.Pages
             }
         }
 
-        protected override async Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
-            EventulaToken = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
+            EventulaToken = _EventulaTokenService.RetrieveToken();
         }
 
         protected void Cancel()

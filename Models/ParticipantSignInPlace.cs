@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace EventulaEntranceClient.Models
+﻿namespace EventulaEntranceClient.Models
 {
     public class ParticipantSignInPlace : IStoreObject
     {
@@ -14,9 +12,5 @@ namespace EventulaEntranceClient.Models
         public DateTimeOffset CoronaCheck { get; set; }
         public DateTimeOffset CoronaTestCheck { get; set; }
         public DateTimeOffset Terms { get; set; }
-
-
-
-
     }
 }

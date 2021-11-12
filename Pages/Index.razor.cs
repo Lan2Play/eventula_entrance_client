@@ -35,6 +35,7 @@ namespace EventulaEntranceClient.Pages
 
         public bool ErrorHidden { get; set; } = true;
 
+
         protected void AddToCode(int code)
         {
             AccessCode += code;
@@ -68,7 +69,7 @@ namespace EventulaEntranceClient.Pages
             }
         }
 
-        protected async void CloseAlert()
+        protected void CloseAlert()
         {
             ErrorHidden = true;
         }

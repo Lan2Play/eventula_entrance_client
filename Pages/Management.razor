@@ -4,6 +4,7 @@
 @implements IDisposable
 
 <div class="@AnimationClass">
+
     <video id="videoFeed" width="1920" height="1080" style="margin-left:-5000px" />
     <audio id="newParticipantSound" src="/audio/mixkit-elevator-tone-2863.wav" />
 
@@ -17,6 +18,18 @@
             </div>
         </div>
         <div class="col-4 col-md-3 col-lg-2">
+            <div class="d-grid gap-1">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="@(() => GoBack())">
+                    <i class="oi oi-arrow-left text-primary"></i> Go back
+                </button>
+                @if (@IsRunningElectron)
+                {
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="@(() => CloseApp())">
+                        <i class="oi oi-circle-x text-primary"></i> Close app
+                    </button>
+                }
+            </div>
+            <hr>
             <div class="d-grid gap-1">
                 @foreach (var participant in Participants)
                 {

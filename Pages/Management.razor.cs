@@ -210,7 +210,12 @@ namespace EventulaEntranceClient.Pages
             if (oldParticipant == null)
             {
                 Participants.Add(participant);
+
                 await _JSRuntime.InvokeAsync<string>("PlayAudio", "newParticipantSound");
+                AnimationClass = "glow-shadow";
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+                AnimationClass = "";
             }
             else
             {
@@ -229,14 +234,6 @@ namespace EventulaEntranceClient.Pages
                     }
                 }
             }
-
-            AnimationClass = "glow-shadow";
-
-            await InvokeAsync(StateHasChanged);
-
-            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
-
-            AnimationClass = "";
 
             await InvokeAsync(StateHasChanged);
         }

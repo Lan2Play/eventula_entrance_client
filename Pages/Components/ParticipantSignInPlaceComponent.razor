@@ -9,7 +9,7 @@
                 @if (SignInPlace.Participant != null)
                 {
                     <div class="flex-shrink-0">
-                        <img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="56" height="56">
+                        <img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="64" height="64" >
                     </div>
                     <div class="flex-grow-1 overflow-hidden text-start m-2">
                         <p class="m-0 text-nobreak text-nowrap text-truncate">@SignInPlace.Participant.User.Firstname @SignInPlace.Participant.User.Surname</p>
@@ -32,6 +32,7 @@
                 {
                     <div class="flex-grow-1 overflow-hidden text-start m-2">
                         <p class="m-0 text-nobreak text-nowrap text-truncate">Nicht belegt</p>
+                        <p class="m-0 text-muted text-nobreak text-nowrap text-truncate">&nbsp;</p>
                     </div>
                 }
             </div>
@@ -50,7 +51,6 @@
                     </div>
                 </div>
             </div>
-
 
             <div class="row">
                 <div class="col mb-3">

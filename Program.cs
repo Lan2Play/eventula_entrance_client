@@ -27,7 +27,7 @@ builder.Services.AddScoped<EventulaApiService>();
 
 builder.Services.AddHttpClient(nameof(EventulaApiService), client =>
 {
-    client.BaseAddress = new System.Uri("https://lan2play.de");
+    client.BaseAddress = new System.Uri(builder.Configuration.GetValue<string>("EventulaApiBaseAddress"));
 }).ConfigurePrimaryHttpMessageHandler(sp =>
 {
     var cookieContainer = sp.GetRequiredService<CookieContainer>();

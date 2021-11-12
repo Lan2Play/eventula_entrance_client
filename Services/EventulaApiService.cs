@@ -1,12 +1,7 @@
 ﻿using EventulaEntranceClient.Models;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace EventulaEntranceClient.Services
 {
@@ -42,7 +37,9 @@ namespace EventulaEntranceClient.Services
             SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
-                   
+                 
+            getResult.EnsureSuccessStatusCode();
+
             var content = await getResult.Content.ReadAsStringAsync();
 
             var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -59,6 +56,9 @@ namespace EventulaEntranceClient.Services
             SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
+
+            getResult.EnsureSuccessStatusCode();
+
             var content = await getResult.Content.ReadAsStringAsync();
 
             var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });

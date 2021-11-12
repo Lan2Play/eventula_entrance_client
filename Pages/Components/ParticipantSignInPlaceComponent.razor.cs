@@ -56,7 +56,17 @@ namespace EventulaEntranceClient.Pages.Components
         public bool IsPaid
         {
             get => SignInPlace != null && SignInPlace.Paid != default || (SignInPlace.Participant?.Purchase != null && SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase));
-            set => ActionWithSave(() => SignInPlace.Paid = value ? DateTimeOffset.Now : default);
+            set => ActionWithSave(async () =>
+            {
+                if (value && await SetIsPaid())
+                {
+                    SignInPlace.Paid = DateTimeOffset.Now;
+                }
+                else
+                {
+                    SignInPlace.Paid = default;
+                }
+            });
         }
 
         public bool IsPaidDisabled => SignInPlace.Participant?.Purchase == null || SignInPlace.Participant.Purchase.Status.Equals("Success", StringComparison.OrdinalIgnoreCase);
@@ -103,6 +113,22 @@ namespace EventulaEntranceClient.Pages.Components
             SignInPlace.Paid = default;
             SignInPlace.Terms = default;
             _DataStore.AddOrUpdate(SignInPlace);
+        }
+
+        private async Task<bool> SetIsPaid()
+        {
+            try
+            {
+                // Call Eventula API
+                var result = await _EventulaApiService.SetIsPaidForParticipant(SignInPlace.Participant).ConfigureAwait(false);
+                return result.Successful;
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError(ex, $"Error set is paid for participant {SignInPlace.Participant.Id}");
+            }
+
+            return false;
         }
 
         public async Task SignIn()

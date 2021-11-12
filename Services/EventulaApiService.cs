@@ -13,6 +13,7 @@ namespace EventulaEntranceClient.Services
         private const string _UserApiParticipantUrl = "api/admin/event/participants/{0}";
 
         private const string _UserApiParticipantSignInUrl = "api/admin/event/participants/{0}/signIn";
+        private const string _UserApiParticipantPaidUrl = "/api/admin/purchases/{0}/setSuccess";
 
         #endregion
 
@@ -37,7 +38,7 @@ namespace EventulaEntranceClient.Services
             SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
-                 
+
             getResult.EnsureSuccessStatusCode();
 
             var content = await getResult.Content.ReadAsStringAsync();
@@ -48,7 +49,7 @@ namespace EventulaEntranceClient.Services
 
         }
 
-        public async Task<TicketRequest> SignInParticipant(Participant participant)
+        public async Task<TicketRequest> SetIsPaidForParticipant(Participant participant)
         {
             using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
@@ -56,6 +57,24 @@ namespace EventulaEntranceClient.Services
             SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
+
+            getResult.EnsureSuccessStatusCode();
+
+            var content = await getResult.Content.ReadAsStringAsync();
+
+            var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return ticketRequest;
+        }
+
+        public async Task<TicketRequest> SignInParticipant(Participant participant)
+        {
+            using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
+
+            await SetXcsrfHeader(httpClient);
+            SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
+
+            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Purchase.Id));
 
             getResult.EnsureSuccessStatusCode();
 

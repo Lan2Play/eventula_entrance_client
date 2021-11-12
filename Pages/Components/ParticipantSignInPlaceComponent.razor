@@ -59,17 +59,17 @@
 
 			<div class="col mb-3">
 				<input type="checkbox" class="btn-check" id="btn-check-corona-@SignInPlace.Id" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
-				<label class="btn btn-outline-success " for="btn-check-corona-@SignInPlace.Id">2G Nachweis</label><br>
+				<label class="btn btn-outline-success w-100 h-100" for="btn-check-corona-@SignInPlace.Id">2G Nachweis</label><br>
 			</div>
 
 			<div class="col mb-3">
 				<input type="checkbox" class="btn-check" id="btn-check-coronatest-@SignInPlace.Id" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
-				<label class="btn btn-outline-success " for="btn-check-coronatest-@SignInPlace.Id">Test Negativ</label><br>
+				<label class="btn btn-outline-success w-100 h-100" for="btn-check-coronatest-@SignInPlace.Id">Test Negativ</label><br>
 			</div>
 
 			<div class="col mb-3">
 				<input type="checkbox" class="btn-check" id="btn-check-terms-@SignInPlace.Id" @bind="IsTermsChecked" disabled="@HasNoParticipant">
-				<label class="btn btn-outline-success " for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
+				<label class="btn btn-outline-success w-100 h-100" for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
 			</div>
 		</div>
 

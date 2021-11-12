@@ -203,7 +203,10 @@ namespace EventulaEntranceClient.Pages
                 return;
             }
 
-            var oldParticipant = Participants.Concat(ParticipantSignInPlaces.Where(x => x.Participant != null).Select(x => x.Participant)).FirstOrDefault(x => x.Id == participant.Id);
+            var oldParticipant = Participants
+                                    .Concat(ParticipantSignInPlaces.Where(x => x.Participant != null).Select(x => x.Participant))
+                                    .Concat(_DataStore.Load<SignInProtocol>().Where(x => x.Participant != null).Select(x => x.Participant))
+                                    .FirstOrDefault(x => x.Id == participant.Id);
             if (oldParticipant == null)
             {
                 Participants.Add(participant);

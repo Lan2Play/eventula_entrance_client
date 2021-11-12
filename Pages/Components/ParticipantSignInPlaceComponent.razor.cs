@@ -32,7 +32,7 @@ namespace EventulaEntranceClient.Pages.Components
 
         #region Fields
 
-        private const int _TimerTargetSeconds = 15 * 60 / 60;
+        private const int _TimerTargetSeconds = 15 * 60;
         private static System.Timers.Timer _Timer;
         #endregion
 

@@ -1,86 +1,84 @@
 ﻿
-<div class="col">
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex justify-content-start">
-                <div class="flex-shrink-0 mt-2 me-1">
-                    <strong style="font-size: xx-large"> @SignInPlace.Id</strong>
-                </div>
-                @if (SignInPlace.Participant != null)
-                {
-                    <div class="flex-shrink-0">
-                        <img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="64" height="64" >
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden text-start m-2">
-                        <p class="m-0 text-nobreak text-nowrap text-truncate">@SignInPlace.Participant.User.Firstname @SignInPlace.Participant.User.Surname</p>
-                        <p class="m-0 text-muted text-nobreak text-nowrap text-truncate">@@@SignInPlace.Participant.User.Steamname</p>
-                    </div>
+<div class="card">
+	<div class="card-body">
+		<div class="d-flex flex-nowrap justify-content-start">
+			<div class="flex-shrink-0 mt-2 me-1">
+				<strong style="font-size: xx-large"> @SignInPlace.Id</strong>
+			</div>
+			@if (SignInPlace.Participant != null)
+			{
+				<div class="flex-shrink-0">
+					<img class="card-img" src="@SignInPlace.Participant.User.Avatar" alt="@SignInPlace.Participant.User.Steamname" width="64" height="64">
+				</div>
+				<div class="flex-grow-1 overflow-hidden text-start m-2">
+					<p class="m-0 text-nobreak text-nowrap text-truncate">@SignInPlace.Participant.User.Firstname @SignInPlace.Participant.User.Surname</p>
+					<p class="m-0 text-muted text-nobreak text-nowrap text-truncate">@@@SignInPlace.Participant.User.Steamname</p>
+				</div>
 
-                    <div class="flex-shrink-0 mt-2 me-1">
-                        @if (SignInPlace.Participant.Seat != null)
-                        {
-                            <p class="m-0 text-nobreak text-nowrap text-truncate">Platz <strong>@SignInPlace.Participant.Seat.SeatName</strong></p>
-                        }
-                    </div>
-                    <div class="flex-shrink-0 mt-2">
-                        <button class="btn btn-danger" type="button" disabled="@HasNoParticipant" onclick="@(() => Delete())">
-                            <span class="oi oi-trash" title="trash" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                }
-                else
-                {
-                    <div class="flex-grow-1 overflow-hidden text-start m-2">
-                        <p class="m-0 text-nobreak text-nowrap text-truncate">Nicht belegt</p>
-                        <p class="m-0 text-muted text-nobreak text-nowrap text-truncate">&nbsp;</p>
-                    </div>
-                }
-            </div>
+				<div class="mt-2 me-1">
+					@if (SignInPlace.Participant.Seat != null)
+					{
+						<p class="m-0 text-nobreak text-nowrap text-truncate"><strong>@SignInPlace.Participant.Seat.SeatName</strong></p>
+					}
+				</div>
+				<div class="mt-2">
+					<button class="btn btn-danger" type="button" disabled="@HasNoParticipant" onclick="@(() => Delete())">
+						<span class="oi oi-trash" title="trash" aria-hidden="true"></span>
+					</button>
+				</div>
+			}
+			else
+			{
+				<div class="flex-grow-1 overflow-hidden text-start m-2">
+					<p class="m-0 text-nobreak text-nowrap text-truncate">Nicht belegt</p>
+					<p class="m-0 text-muted text-nobreak text-nowrap text-truncate">&nbsp;</p>
+				</div>
+			}
+		</div>
 
-            <div class="row mb-3 mt-2">
-                <div class="col-auto">
-                    <button class="btn btn-primary" type="button" disabled="@HasNoParticipant" onclick="@(() => StartTimer())">
-                        <span class="oi oi-timer" title="timer" aria-hidden="true"></span>
-                    </button>
-                </div>
+		<div class="row mb-3 mt-2">
+			<div class="col-auto">
+				<button class="btn btn-primary" type="button" disabled="@HasNoParticipant" onclick="@(() => StartTimer())">
+					<span class="oi oi-timer" title="timer" aria-hidden="true"></span>
+				</button>
+			</div>
 
-                <div class="col">
-                    <div class="progress h-100">
-                        <div class="progress-label" hidden="@(Progress <= 0)">@TimeLeft</div>
-                        <div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress.ToString(CultureInfo.InvariantCulture)}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
-                    </div>
-                </div>
-            </div>
+			<div class="col">
+				<div class="progress h-100">
+					<div class="progress-label" hidden="@(Progress <= 0)">@TimeLeft</div>
+					<div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress.ToString(CultureInfo.InvariantCulture)}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
+				</div>
+			</div>
+		</div>
 
-            <div class="row">
-                <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-paid-@SignInPlace.Id" @bind="IsPaid" disabled="@IsPaidDisabled">
-                    <label class="btn btn-outline-success w-100 h-100" for="btn-check-paid-@SignInPlace.Id">Bezahlt</label><br>
-                </div>
+		<div class="row">
+			<div class="col mb-3">
+				<input type="checkbox" class="btn-check" id="btn-check-paid-@SignInPlace.Id" @bind="IsPaid" disabled="@IsPaidDisabled">
+				<label class="btn btn-outline-success w-100 h-100" for="btn-check-paid-@SignInPlace.Id">Bezahlt</label><br>
+			</div>
 
-                <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-corona-@SignInPlace.Id" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
-                    <label class="btn btn-outline-success " for="btn-check-corona-@SignInPlace.Id">2G Nachweis</label><br>
-                </div>
+			<div class="col mb-3">
+				<input type="checkbox" class="btn-check" id="btn-check-corona-@SignInPlace.Id" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
+				<label class="btn btn-outline-success " for="btn-check-corona-@SignInPlace.Id">2G Nachweis</label><br>
+			</div>
 
-                <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-coronatest-@SignInPlace.Id" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
-                    <label class="btn btn-outline-success " for="btn-check-coronatest-@SignInPlace.Id">Test Negativ</label><br>
-                </div>
+			<div class="col mb-3">
+				<input type="checkbox" class="btn-check" id="btn-check-coronatest-@SignInPlace.Id" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
+				<label class="btn btn-outline-success " for="btn-check-coronatest-@SignInPlace.Id">Test Negativ</label><br>
+			</div>
 
-                <div class="col mb-3">
-                    <input type="checkbox" class="btn-check" id="btn-check-terms-@SignInPlace.Id" @bind="IsTermsChecked" disabled="@HasNoParticipant">
-                    <label class="btn btn-outline-success " for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
-                </div>
-            </div>
+			<div class="col mb-3">
+				<input type="checkbox" class="btn-check" id="btn-check-terms-@SignInPlace.Id" @bind="IsTermsChecked" disabled="@HasNoParticipant">
+				<label class="btn btn-outline-success " for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
+			</div>
+		</div>
 
-            <div class="row">
-                <div class="col">
-                    <button class="btn btn-primary w-100" type="button" disabled="@SignInDisabled" onclick="@(() => SignIn())">
-                        <span class="oi oi-timer" title="timer" aria-hidden="true">SignIn</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="row">
+			<div class="col">
+				<button class="btn btn-primary w-100" type="button" disabled="@SignInDisabled" onclick="@(() => SignIn())">
+					<span class="oi oi-timer" title="timer" aria-hidden="true">SignIn</span>
+				</button>
+			</div>
+		</div>
+	</div>
 </div>

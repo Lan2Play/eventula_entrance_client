@@ -46,6 +46,10 @@ namespace EventulaEntranceClient.Pages
 
         private const int _ParticipantSignInPlacesCount = 12;
 
+        private const string _NoTicketFound = "Kein Ticket gefunden";
+
+        private string _LastTicket = string.Empty;
+
         public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
 
         public List<Participant> Participants { get; set; } = new List<Participant>();
@@ -55,6 +59,8 @@ namespace EventulaEntranceClient.Pages
         private string AnimationClass { get; set; } = string.Empty;
 
         private bool IsRunningElectron { get; set; }
+
+        public string LastTicketNr { get; set; } = _NoTicketFound;
 
         protected override void OnInitialized()
         {
@@ -163,9 +169,15 @@ namespace EventulaEntranceClient.Pages
             byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
             var qrCode = _BarcodeService.BarcodeTextFromImage(imageData);
             _Logger.LogInformation($"QR Code found {qrCode}");
+
+            if (!_LastTicket.Equals(qrCode, StringComparison.OrdinalIgnoreCase))
+            {
+                LastTicketNr = string.IsNullOrEmpty(qrCode) ? _NoTicketFound : qrCode;
+                await InvokeAsync(StateHasChanged);
+            }
+
             if (!string.IsNullOrEmpty(qrCode))
             {
-
                 var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
                 if (ticketRequest?.Participant != null)
                 {

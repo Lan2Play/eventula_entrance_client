@@ -15,7 +15,7 @@ namespace EventulaEntranceClient.Services
             _Logger = logger;
         }
 
-        public async Task<bool> SaveTokenAsync(string token)
+        public bool SaveToken(string token)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace EventulaEntranceClient.Services
             return false;     
         }
 
-        public async Task<string> RetrieveTokenAsync()
+        public string RetrieveToken()
         {
             return _DataStore.LoadById<EventulaToken>(_TokenIdentifier)?.Token;
         }

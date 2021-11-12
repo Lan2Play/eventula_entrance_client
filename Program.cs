@@ -77,7 +77,7 @@ app.MapFallbackToPage("/_Host");
 Task.Run(async () =>
     {
         var browserWindow = await Electron.WindowManager.CreateWindowAsync();
-        
+
         // Removes the top menu
         browserWindow.RemoveMenu();
 

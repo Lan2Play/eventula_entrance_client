@@ -44,7 +44,7 @@ namespace EventulaEntranceClient.Pages
 
         #endregion
 
-        private const int _ParticipantSignInPlacesCount = 15;
+        private const int _ParticipantSignInPlacesCount = 12;
 
         public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
 
@@ -52,7 +52,9 @@ namespace EventulaEntranceClient.Pages
 
         private string AccessCode { get; set; }
 
-        private string AnimationClass { get; set; } = "";
+        private string AnimationClass { get; set; } = string.Empty;
+
+        private bool IsRunningElectron { get; set; }
 
         protected override void OnInitialized()
         {
@@ -95,26 +97,23 @@ namespace EventulaEntranceClient.Pages
         {
             if (firstRender)
             {
-
                 var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
 
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
                 {
                     if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                     {
-                        _NavigationManager.NavigateTo("");
+                        _NavigationManager.NavigateTo(string.Empty);
                     }
 
                     AccessCode = accessCode;
-
-                    await InvokeAsync(StateHasChanged);
                 }
                 else
                 {
-                    _NavigationManager.NavigateTo("");
+                    _NavigationManager.NavigateTo(string.Empty);
                 }
 
-                var token = await _EventulaTokenService.RetrieveTokenAsync().ConfigureAwait(false);
+                var token = _EventulaTokenService.RetrieveToken();
 
                 if (string.IsNullOrEmpty(token))
                 {
@@ -122,11 +121,12 @@ namespace EventulaEntranceClient.Pages
                 }
                 else
                 {
-                    if (firstRender)
-                    {
-                        await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
-                    }
+                    await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
                 }
+
+                IsRunningElectron = await _JSRuntime.InvokeAsync<bool>("isElectron").ConfigureAwait(false);
+
+                await InvokeAsync(StateHasChanged);
             }
         }
 
@@ -134,13 +134,22 @@ namespace EventulaEntranceClient.Pages
         {
             try
             {
-
                 await CaptureFrame();
             }
             catch (Exception e)
             {
-
+                _Logger.LogError(e, "Error capturing frame.");
             }
+        }
+
+        private void GoBack()
+        {
+            _NavigationManager.NavigateTo(string.Empty);
+        }
+
+        private void CloseApp()
+        {
+            ElectronNET.API.Electron.App.Quit();
         }
 
         private async Task CaptureFrame()
@@ -195,7 +204,6 @@ namespace EventulaEntranceClient.Pages
             return ParticipantSignInPlaces.OrderBy(a => a.Id).FirstOrDefault(x => x.Participant == null);
         }
 
-
         private async Task AddParticipantAsync(Participant participant)
         {
             if (participant == null)
@@ -233,13 +241,12 @@ namespace EventulaEntranceClient.Pages
 
             await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
 
-            AnimationClass = "";
+            AnimationClass = string.Empty;
 
             await InvokeAsync(StateHasChanged);
         }
 
         #region IDisposable
-
         void IDisposable.Dispose()
         {
             _BackgroundTrigger.Trigger -= Trigger;

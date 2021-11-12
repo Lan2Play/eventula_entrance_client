@@ -34,7 +34,7 @@ namespace EventulaEntranceClient.Services
             using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
             await SetXcsrfHeader(httpClient);
-            SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
+            SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
                  
@@ -53,7 +53,7 @@ namespace EventulaEntranceClient.Services
             using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
             await SetXcsrfHeader(httpClient);
-            SetDefaultHeaders(httpClient, await _EventulaTokenService.RetrieveTokenAsync());
+            SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
 
             var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
 

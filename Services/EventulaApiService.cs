@@ -56,7 +56,7 @@ namespace EventulaEntranceClient.Services
             await SetXcsrfHeader(httpClient);
             SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
 
-            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
+            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantPaidUrl, participant.Purchase.Id));
 
             getResult.EnsureSuccessStatusCode();
 
@@ -74,7 +74,7 @@ namespace EventulaEntranceClient.Services
             await SetXcsrfHeader(httpClient);
             SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
 
-            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Purchase.Id));
+            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
 
             getResult.EnsureSuccessStatusCode();
 

@@ -182,7 +182,6 @@ namespace EventulaEntranceClient.Pages
                 var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
                 if (ticketRequest?.Participant != null)
                 {
-                    _DataStore.AddOrUpdate(ticketRequest.Participant);
                     await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
                 }
             }
@@ -230,6 +229,7 @@ namespace EventulaEntranceClient.Pages
                                     .FirstOrDefault(x => x.Id == participant.Id);
             if (oldParticipant == null)
             {
+                _DataStore.AddOrUpdate(participant);
                 Participants.Add(participant);
 
                 await _JSRuntime.InvokeAsync<string>("PlayAudio", "newParticipantSound");
@@ -245,6 +245,7 @@ namespace EventulaEntranceClient.Pages
                 {
                     Participants.Remove(oldParticipant);
                     Participants.Insert(oldId, participant);
+                    _DataStore.AddOrUpdate(participant);
                 }
                 else
                 {
@@ -252,6 +253,7 @@ namespace EventulaEntranceClient.Pages
                     if (participantInSignInPlace != null)
                     {
                         participantInSignInPlace.Participant = participant;
+                        _DataStore.AddOrUpdate(participantInSignInPlace);
                     }
                 }
             }

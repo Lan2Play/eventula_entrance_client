@@ -1,7 +1,10 @@
-﻿namespace EventulaEntranceClient.Models
+﻿using LiteDB;
+
+namespace EventulaEntranceClient.Models
 {
     public class ParticipantSignInPlace : IStoreObject
     {
+        [BsonId]
         public int Id { get; set; }
 
         public Participant Participant { get; set; }

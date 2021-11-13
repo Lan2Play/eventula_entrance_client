@@ -1,5 +1,6 @@
 ﻿using EventulaEntranceClient.Converter;
 using EventulaEntranceClient.Storage;
+using LiteDB;
 using System.Text.Json.Serialization;
 
 namespace EventulaEntranceClient.Models
@@ -21,6 +22,7 @@ namespace EventulaEntranceClient.Models
 
     public class Participant : IStoreObject
     {
+        [BsonId]
         [JsonPropertyName("id")]
         public int Id { get; set; }
 

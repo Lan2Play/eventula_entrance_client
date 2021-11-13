@@ -32,7 +32,7 @@ namespace EventulaEntranceClient.Pages.Components
 
         #region Fields
 
-        private const int _TimerTargetSeconds = 15 * 60;
+        private const int _TimerTargetSeconds = 15 * 60 / 60;
         private static System.Timers.Timer _Timer;
         #endregion
 
@@ -66,6 +66,8 @@ namespace EventulaEntranceClient.Pages.Components
                 {
                     SignInPlace.Paid = default;
                 }
+
+                InvokeAsync(StateHasChanged);
             });
         }
 
@@ -94,7 +96,8 @@ namespace EventulaEntranceClient.Pages.Components
         public bool SignInDisabled => !IsPaid
                                    || !IsCoronaChecked
                                    || !IsCoronaTestChecked
-                                   || !IsTermsChecked;
+                                   || !IsTermsChecked
+                                   || SignInPlace.Participant.SignedIn;
 
         #endregion
 
@@ -121,6 +124,13 @@ namespace EventulaEntranceClient.Pages.Components
             {
                 // Call Eventula API
                 var result = await _EventulaApiService.SetIsPaidForParticipant(SignInPlace.Participant).ConfigureAwait(false);
+                var resultTicket = await _EventulaApiService.RequestTicket(SignInPlace.Participant.Id.ToString());
+
+                if (resultTicket.Successful)
+                {
+                    SignInPlace.Participant = resultTicket.Participant;
+                }
+
                 return result.Successful;
             }
             catch (Exception ex)
@@ -149,7 +159,7 @@ namespace EventulaEntranceClient.Pages.Components
                         SignInCompleted = DateTimeOffset.Now,
                     };
 
-                    _DataStore.AddOrUpdate(protocol);
+                    //_DataStore.AddOrUpdate(protocol);
 
                     // Reset component
                     Delete();

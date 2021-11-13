@@ -22,7 +22,7 @@ namespace EventulaEntranceClient.Storage
         public void AddOrUpdate<T>(T data)
             where T : IStoreObject
         {
-            _LiteDatabase.GetCollection<T>().Upsert(new BsonValue(data.Id), data);
+            _LiteDatabase.GetCollection<T>().Upsert(data);
         }
 
         public IEnumerable<T> Load<T>()

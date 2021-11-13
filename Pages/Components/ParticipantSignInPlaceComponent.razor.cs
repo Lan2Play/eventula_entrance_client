@@ -67,7 +67,7 @@ namespace EventulaEntranceClient.Pages.Components
                     SignInPlace.Paid = default;
                 }
 
-                InvokeAsync(StateHasChanged);
+                await InvokeAsync(StateHasChanged);
             });
         }
 

@@ -3,7 +3,7 @@
 
 @implements IDisposable
 
-<div class="@AnimationClass">
+<div class="@AnimationClass" onmousemove="@(() => ResetTimerInterval())" onkeypress="@(() => ResetTimerInterval())">
 
 	<audio id="newParticipantSound" src="/audio/mixkit-elevator-tone-2863.wav" />
 

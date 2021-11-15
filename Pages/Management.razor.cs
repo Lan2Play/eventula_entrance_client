@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
 using EventulaEntranceClient.Models;
+using System.Timers;
 
 namespace EventulaEntranceClient.Pages
 {
@@ -62,8 +63,15 @@ namespace EventulaEntranceClient.Pages
 
         public string LastTicketNr { get; set; } = _NoTicketFound;
 
+        private System.Timers.Timer _InactiveTimer;
+
+
         protected override void OnInitialized()
         {
+            _InactiveTimer = new System.Timers.Timer(TimeSpan.FromSeconds(120).TotalMilliseconds);
+            _InactiveTimer.Elapsed += UserInactive;
+            _InactiveTimer.AutoReset = false;
+
             _BackgroundTrigger.Trigger += Trigger;
             _UiNotifyService.NewParticipant += OnNewParticipant;
 
@@ -260,6 +268,18 @@ namespace EventulaEntranceClient.Pages
 
             await InvokeAsync(StateHasChanged);
         }
+
+        public void ResetTimerInterval()
+        {
+            _InactiveTimer.Stop();
+            _InactiveTimer.Start();
+        }
+
+        private void UserInactive(Object source, ElapsedEventArgs e)
+        {
+            _NavigationManager.NavigateTo(string.Empty);
+        }
+
 
         #region IDisposable
         void IDisposable.Dispose()

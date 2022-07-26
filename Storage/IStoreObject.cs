@@ -1,7 +1,6 @@
-﻿namespace EventulaEntranceClient.Storage
+﻿namespace EventulaEntranceClient.Storage;
+
+public interface IStoreObject
 {
-	public interface IStoreObject
-	{
         int Id { get; set; }
-	}
 }

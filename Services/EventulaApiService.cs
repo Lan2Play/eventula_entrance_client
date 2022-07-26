@@ -1,119 +1,117 @@
-﻿using EventulaEntranceClient.Models;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace EventulaEntranceClient.Services
+namespace EventulaEntranceClient.Services;
+
+public class EventulaApiService
 {
-    public class EventulaApiService
+    #region consts
+
+    private const string _CsrfCookieUrl = "sanctum/csrf-cookie";
+    private const string _UserApiParticipantUrl = "api/admin/event/participants/{0}";
+
+    private const string _UserApiParticipantSignInUrl = "api/admin/event/participants/{0}/signIn";
+    private const string _UserApiParticipantPaidUrl = "/api/admin/purchases/{0}/setSuccess";
+
+    #endregion
+
+    private readonly IHttpClientFactory _HttpClientFactory;
+    private readonly ILogger<EventulaApiService> _Logger;
+    private readonly CookieContainer _Cookies;
+    private readonly EventulaTokenService _EventulaTokenService;
+
+    public EventulaApiService(IHttpClientFactory httpClientFactory, CookieContainer cookies, EventulaTokenService eventulaTokenService, ILogger<EventulaApiService> logger)
     {
-        #region consts
+        _HttpClientFactory = httpClientFactory;
+        _Cookies = cookies;
+        _EventulaTokenService = eventulaTokenService;
+        _Logger = logger;
+    }
 
-        private const string _CsrfCookieUrl = "sanctum/csrf-cookie";
-        private const string _UserApiParticipantUrl = "api/admin/event/participants/{0}";
+    public async Task<TicketRequest> RequestTicket(string qrCode)
+    {
+        using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
-        private const string _UserApiParticipantSignInUrl = "api/admin/event/participants/{0}/signIn";
-        private const string _UserApiParticipantPaidUrl = "/api/admin/purchases/{0}/setSuccess";
+        await SetXcsrfHeader(httpClient);
+        SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
 
-        #endregion
+        var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
 
-        private readonly IHttpClientFactory _HttpClientFactory;
-        private readonly ILogger<EventulaApiService> _Logger;
-        private readonly CookieContainer _Cookies;
-        private readonly EventulaTokenService _EventulaTokenService;
+        getResult.EnsureSuccessStatusCode();
 
-        public EventulaApiService(IHttpClientFactory httpClientFactory, CookieContainer cookies, EventulaTokenService eventulaTokenService, ILogger<EventulaApiService> logger)
+        var content = await getResult.Content.ReadAsStringAsync();
+
+        var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        return ticketRequest;
+
+    }
+
+    public async Task<TicketRequest> SetIsPaidForParticipant(Participant participant)
+    {
+        using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
+
+        await SetXcsrfHeader(httpClient);
+        SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
+
+        var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantPaidUrl, participant.Purchase.Id));
+
+        getResult.EnsureSuccessStatusCode();
+
+        var content = await getResult.Content.ReadAsStringAsync();
+
+        var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        return ticketRequest;
+    }
+
+    public async Task<TicketRequest> SignInParticipant(Participant participant)
+    {
+        using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
+
+        await SetXcsrfHeader(httpClient);
+        SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
+
+        var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
+
+        getResult.EnsureSuccessStatusCode();
+
+        var content = await getResult.Content.ReadAsStringAsync();
+
+        var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        return ticketRequest;
+    }
+
+
+    private async Task SetXcsrfHeader(HttpClient httpClient)
+    {
+        var csrfCookieUrl = new Uri(httpClient.BaseAddress, _CsrfCookieUrl);
+
+
+        var csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
+
+        var csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
+
+        if (csrfToken == null)
         {
-            _HttpClientFactory = httpClientFactory;
-            _Cookies = cookies;
-            _EventulaTokenService = eventulaTokenService;
-            _Logger = logger;
+            var getCsrfResult = await httpClient.GetAsync(_CsrfCookieUrl);
+            csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
+            csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
         }
 
-        public async Task<TicketRequest> RequestTicket(string qrCode)
+        if (csrfToken != null)
         {
-            using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
-
-            await SetXcsrfHeader(httpClient);
-            SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
-
-            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
-
-            getResult.EnsureSuccessStatusCode();
-
-            var content = await getResult.Content.ReadAsStringAsync();
-
-            var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            return ticketRequest;
-
+            httpClient.DefaultRequestHeaders.Add("X-CSRF-Token", csrfToken.Value);
         }
+    }
 
-        public async Task<TicketRequest> SetIsPaidForParticipant(Participant participant)
-        {
-            using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
+    private static void SetDefaultHeaders(HttpClient httpClient, string token)
+    {
+        var requestToken = token.Split('|').Last();
 
-            await SetXcsrfHeader(httpClient);
-            SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
-
-            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantPaidUrl, participant.Purchase.Id));
-
-            getResult.EnsureSuccessStatusCode();
-
-            var content = await getResult.Content.ReadAsStringAsync();
-
-            var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            return ticketRequest;
-        }
-
-        public async Task<TicketRequest> SignInParticipant(Participant participant)
-        {
-            using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
-
-            await SetXcsrfHeader(httpClient);
-            SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
-
-            var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
-
-            getResult.EnsureSuccessStatusCode();
-
-            var content = await getResult.Content.ReadAsStringAsync();
-
-            var ticketRequest = JsonSerializer.Deserialize<TicketRequest>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            return ticketRequest;
-        }
-
-
-        private async Task SetXcsrfHeader(HttpClient httpClient)
-        {
-            var csrfCookieUrl = new Uri(httpClient.BaseAddress, _CsrfCookieUrl);
-
-
-            var csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
-
-            var csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
-
-            if (csrfToken == null)
-            {
-                var getCsrfResult = await httpClient.GetAsync(_CsrfCookieUrl);
-                csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
-                csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
-            }
-
-            if (csrfToken != null)
-            {
-                httpClient.DefaultRequestHeaders.Add("X-CSRF-Token", csrfToken.Value);
-            }
-        }
-
-        private static void SetDefaultHeaders(HttpClient httpClient, string token)
-        {
-            var requestToken = token.Split('|').Last();
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", requestToken);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        }
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", requestToken);
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 }

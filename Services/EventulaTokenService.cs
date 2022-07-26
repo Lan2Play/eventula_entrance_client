@@ -1,43 +1,39 @@
-﻿using EventulaEntranceClient.Models;
-using EventulaEntranceClient.Storage;
+﻿namespace EventulaEntranceClient.Services;
 
-namespace EventulaEntranceClient.Services
+public class EventulaTokenService
 {
-    public class EventulaTokenService
+    private const int _TokenIdentifier = 1337;
+    private readonly IDataStore _DataStore;
+    private readonly ILogger<EventulaTokenService> _Logger;
+
+    public EventulaTokenService(IDataStore dataStore, ILogger<EventulaTokenService> logger)
     {
-        private const int _TokenIdentifier = 1337;
-        private readonly IDataStore _DataStore;
-        private readonly ILogger<EventulaTokenService> _Logger;
+        _DataStore = dataStore;
+        _Logger = logger;
+    }
 
-        public EventulaTokenService(IDataStore dataStore, ILogger<EventulaTokenService> logger)
+    public bool SaveToken(string token)
+    {
+        try
         {
-            _DataStore = dataStore;
-            _Logger = logger;
-        }
-
-        public bool SaveToken(string token)
-        {
-            try
+            _DataStore.AddOrUpdate(new EventulaToken()
             {
-                _DataStore.AddOrUpdate(new EventulaToken()
-                {
-                    Id = _TokenIdentifier,
-                    Token = token
-                }) ;
+                Id = _TokenIdentifier,
+                Token = token
+            }) ;
 
-                return true;
-            }
-            catch(Exception ex)
-            {
-                _Logger.LogError(ex, "Error saving eventula token.");
-            }
-
-            return false;     
+            return true;
         }
-
-        public string RetrieveToken()
+        catch(Exception ex)
         {
-            return _DataStore.LoadById<EventulaToken>(_TokenIdentifier)?.Token;
+            _Logger.LogError(ex, "Error saving eventula token.");
         }
+
+        return false;
+    }
+
+    public string RetrieveToken()
+    {
+        return _DataStore.LoadById<EventulaToken>(_TokenIdentifier)?.Token;
     }
 }

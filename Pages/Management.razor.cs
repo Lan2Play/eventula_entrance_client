@@ -3,290 +3,288 @@ using EventulaEntranceClient.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
-using EventulaEntranceClient.Models;
 using System.Timers;
 
-namespace EventulaEntranceClient.Pages
+namespace EventulaEntranceClient.Pages;
+
+public partial class Management
 {
-    public partial class Management
+    #region Injects
+
+    [Inject]
+    private ProtectionService _ProtectionService { get; set; }
+
+    [Inject]
+    private NavigationManager _NavigationManager { get; set; }
+
+    [Inject]
+    private IJSRuntime _JSRuntime { get; set; }
+
+    [Inject]
+    private IBarcodeService _BarcodeService { get; set; }
+
+    [Inject]
+    private ILogger<Index> _Logger { get; set; }
+
+    [Inject]
+    private BackgroundTrigger _BackgroundTrigger { get; set; }
+
+    [Inject]
+    private UiNotifyService _UiNotifyService { get; set; }
+
+    [Inject]
+    private EventulaApiService _EventulaApiService { get; set; }
+
+    [Inject]
+    private EventulaTokenService _EventulaTokenService { get; set; }
+
+
+    [Inject]
+    private IDataStore _DataStore { get; set; }
+
+    #endregion
+
+    private const int _ParticipantSignInPlacesCount = 12;
+
+    private const string _NoTicketFound = "Kein Ticket gefunden";
+
+    private string _LastTicket = string.Empty;
+
+    public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
+
+    public List<Participant> Participants { get; set; } = new List<Participant>();
+
+    private string AccessCode { get; set; }
+
+    private string AnimationClass { get; set; } = string.Empty;
+
+    private bool IsRunningElectron { get; set; }
+
+    public string LastTicketNr { get; set; } = _NoTicketFound;
+
+    private System.Timers.Timer _InactiveTimer;
+
+
+    protected override void OnInitialized()
     {
-        #region Injects
+        _InactiveTimer = new System.Timers.Timer(TimeSpan.FromSeconds(120).TotalMilliseconds);
+        _InactiveTimer.Elapsed += UserInactive;
+        _InactiveTimer.AutoReset = false;
 
-        [Inject]
-        private ProtectionService _ProtectionService { get; set; }
+        _BackgroundTrigger.Trigger += Trigger;
+        _UiNotifyService.NewParticipant += OnNewParticipant;
 
-        [Inject]
-        private NavigationManager _NavigationManager { get; set; }
+        Participants.AddRange(_DataStore.Load<Participant>());
 
-        [Inject]
-        private IJSRuntime _JSRuntime { get; set; }
+        var savedParticipants = _DataStore.Load<ParticipantSignInPlace>();
 
-        [Inject]
-        private IBarcodeService _BarcodeService { get; set; }
+        ParticipantSignInPlaces.AddRange(savedParticipants);
 
-        [Inject]
-        private ILogger<Index> _Logger { get; set; }
-
-        [Inject]
-        private BackgroundTrigger _BackgroundTrigger { get; set; }
-
-        [Inject]
-        private UiNotifyService _UiNotifyService { get; set; }
-
-        [Inject]
-        private EventulaApiService _EventulaApiService { get; set; }
-
-        [Inject]
-        private EventulaTokenService _EventulaTokenService { get; set; }
-
-
-        [Inject]
-        private IDataStore _DataStore { get; set; }
-
-        #endregion
-
-        private const int _ParticipantSignInPlacesCount = 12;
-
-        private const string _NoTicketFound = "Kein Ticket gefunden";
-
-        private string _LastTicket = string.Empty;
-
-        public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
-
-        public List<Participant> Participants { get; set; } = new List<Participant>();
-
-        private string AccessCode { get; set; }
-
-        private string AnimationClass { get; set; } = string.Empty;
-
-        private bool IsRunningElectron { get; set; }
-
-        public string LastTicketNr { get; set; } = _NoTicketFound;
-
-        private System.Timers.Timer _InactiveTimer;
-
-
-        protected override void OnInitialized()
+        for (int i = 1; i <= _ParticipantSignInPlacesCount; i++)
         {
-            _InactiveTimer = new System.Timers.Timer(TimeSpan.FromSeconds(120).TotalMilliseconds);
-            _InactiveTimer.Elapsed += UserInactive;
-            _InactiveTimer.AutoReset = false;
-
-            _BackgroundTrigger.Trigger += Trigger;
-            _UiNotifyService.NewParticipant += OnNewParticipant;
-
-            Participants.AddRange(_DataStore.Load<Participant>());
-
-            var savedParticipants = _DataStore.Load<ParticipantSignInPlace>();
-
-            ParticipantSignInPlaces.AddRange(savedParticipants);
-
-            for (int i = 1; i <= _ParticipantSignInPlacesCount; i++)
+            if (!ParticipantSignInPlaces.Any(a => a.Id == i))
             {
-                if (!ParticipantSignInPlaces.Any(a => a.Id == i))
+                var updatedParticipant = new ParticipantSignInPlace()
                 {
-                    var updatedParticipant = new ParticipantSignInPlace()
-                    {
-                        Id = i,
-                    };
+                    Id = i,
+                };
 
-                    _DataStore.AddOrUpdate(updatedParticipant);
-                    ParticipantSignInPlaces.Add(updatedParticipant);
-                }
-            }
-
-            foreach (var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount).ToList())
-            {
-                ParticipantSignInPlaces.Remove(removeParticipant);
-                _DataStore.Delete(removeParticipant);
+                _DataStore.AddOrUpdate(updatedParticipant);
+                ParticipantSignInPlaces.Add(updatedParticipant);
             }
         }
 
-        private async void OnNewParticipant(object sender, Participant participant)
+        foreach (var removeParticipant in ParticipantSignInPlaces.Where(a => a.Id > _ParticipantSignInPlacesCount).ToList())
         {
-            await AddParticipantAsync(participant).ConfigureAwait(false);
+            ParticipantSignInPlaces.Remove(removeParticipant);
+            _DataStore.Delete(removeParticipant);
         }
+    }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async void OnNewParticipant(object sender, Participant participant)
+    {
+        await AddParticipantAsync(participant).ConfigureAwait(false);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            if (firstRender)
+            var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
             {
-                var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
-
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
-                {
-                    if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
-                    {
-                        _NavigationManager.NavigateTo(string.Empty);
-                    }
-
-                    AccessCode = accessCode;
-                }
-                else
+                if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                 {
                     _NavigationManager.NavigateTo(string.Empty);
                 }
 
-                var token = _EventulaTokenService.RetrieveToken();
-
-                if (string.IsNullOrEmpty(token))
-                {
-                    _NavigationManager.NavigateTo($"settings?ac={accessCode}");
-                }
-                else
-                {
-                    await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
-                }
-
-                IsRunningElectron = await _JSRuntime.InvokeAsync<bool>("isElectron").ConfigureAwait(false);
-
-                await InvokeAsync(StateHasChanged);
-            }
-        }
-
-        private async void Trigger(object sender, EventArgs eventArgs)
-        {
-            try
-            {
-                await CaptureFrame();
-            }
-            catch (Exception e)
-            {
-                _Logger.LogError(e, "Error capturing frame.");
-            }
-        }
-
-        private void GoBack()
-        {
-            _NavigationManager.NavigateTo(string.Empty);
-        }
-
-        private void CloseApp()
-        {
-            ElectronNET.API.Electron.App.Quit();
-        }
-
-        private async Task CaptureFrame()
-        {
-            var data = await _JSRuntime.InvokeAsync<string>("getFrame", "videoFeed", "currentFrame").ConfigureAwait(false);
-            await ProcessImage(data);
-        }
-
-        public async Task ProcessImage(string imageString)
-        {
-            byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
-            var qrCode = _BarcodeService.BarcodeTextFromImage(imageData);
-            _Logger.LogInformation($"QR Code found {qrCode}");
-
-            if (!_LastTicket.Equals(qrCode, StringComparison.OrdinalIgnoreCase))
-            {
-                _LastTicket = qrCode;
-                LastTicketNr = string.IsNullOrEmpty(qrCode) ? _NoTicketFound : qrCode;
-                await InvokeAsync(StateHasChanged);
-            }
-
-            if (!string.IsNullOrEmpty(qrCode))
-            {
-                var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
-                if (ticketRequest?.Participant != null)
-                {
-                    await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
-                }
-            }
-        }
-
-        public async Task AddToSignInPlace(Participant participant)
-        {
-            if (participant == null)
-            {
-                return;
-            }
-
-            var openPlace = FindEmptySignInPlace();
-
-            if (openPlace == null)
-            {
-                return;
-            }
-
-            openPlace.Participant = participant;
-
-            _DataStore.AddOrUpdate(openPlace);
-
-            Participants.Remove(participant);
-            _DataStore.Delete(participant);
-
-            await InvokeAsync(StateHasChanged);
-        }
-
-        private ParticipantSignInPlace FindEmptySignInPlace()
-        {
-            return ParticipantSignInPlaces.OrderBy(a => a.Id).FirstOrDefault(x => x.Participant == null);
-        }
-
-        private async Task AddParticipantAsync(Participant participant)
-        {
-            if (participant == null)
-            {
-                return;
-            }
-
-            var oldParticipant = Participants
-                                    .Concat(ParticipantSignInPlaces.Where(x => x.Participant != null).Select(x => x.Participant))
-                                    .Concat(_DataStore.Load<SignInProtocol>().Where(x => x.Participant != null).Select(x => x.Participant))
-                                    .FirstOrDefault(x => x.Id == participant.Id);
-            if (oldParticipant == null)
-            {
-                _DataStore.AddOrUpdate(participant);
-                Participants.Add(participant);
-
-                await _JSRuntime.InvokeAsync<string>("PlayAudio", "newParticipantSound");
-                AnimationClass = "glow-shadow";
-                await InvokeAsync(StateHasChanged);
-                await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
-                AnimationClass = "";
+                AccessCode = accessCode;
             }
             else
             {
-                var oldId = Participants.IndexOf(oldParticipant);
-                if (oldId >= 0)
-                {
-                    Participants.Remove(oldParticipant);
-                    Participants.Insert(oldId, participant);
-                    _DataStore.AddOrUpdate(participant);
-                }
-                else
-                {
-                    var participantInSignInPlace = ParticipantSignInPlaces.FirstOrDefault(x => x.Participant == oldParticipant);
-                    if (participantInSignInPlace != null)
-                    {
-                        participantInSignInPlace.Participant = participant;
-                        _DataStore.AddOrUpdate(participantInSignInPlace);
-                    }
-                }
+                _NavigationManager.NavigateTo(string.Empty);
             }
+
+            var token = _EventulaTokenService.RetrieveToken();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                _NavigationManager.NavigateTo($"settings?ac={accessCode}");
+            }
+            else
+            {
+                await _JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+            }
+
+            IsRunningElectron = await _JSRuntime.InvokeAsync<bool>("isElectron").ConfigureAwait(false);
 
             await InvokeAsync(StateHasChanged);
         }
-
-        public void ResetTimerInterval()
-        {
-            _InactiveTimer.Stop();
-            _InactiveTimer.Start();
-        }
-
-        private void UserInactive(Object source, ElapsedEventArgs e)
-        {
-            _NavigationManager.NavigateTo(string.Empty);
-        }
-
-
-        #region IDisposable
-        void IDisposable.Dispose()
-        {
-            _BackgroundTrigger.Trigger -= Trigger;
-        }
-        #endregion
-
     }
+
+    private async void Trigger(object sender, EventArgs eventArgs)
+    {
+        try
+        {
+            await CaptureFrame();
+        }
+        catch (Exception e)
+        {
+            _Logger.LogError(e, "Error capturing frame.");
+        }
+    }
+
+    private void GoBack()
+    {
+        _NavigationManager.NavigateTo(string.Empty);
+    }
+
+    private void CloseApp()
+    {
+        ElectronNET.API.Electron.App.Quit();
+    }
+
+    private async Task CaptureFrame()
+    {
+        var data = await _JSRuntime.InvokeAsync<string>("getFrame", "videoFeed", "currentFrame").ConfigureAwait(false);
+        await ProcessImage(data);
+    }
+
+    public async Task ProcessImage(string imageString)
+    {
+        byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
+        var qrCode = _BarcodeService.BarcodeTextFromImage(imageData);
+        _Logger.LogInformation($"QR Code found {qrCode}");
+
+        if (!_LastTicket.Equals(qrCode, StringComparison.OrdinalIgnoreCase))
+        {
+            _LastTicket = qrCode;
+            LastTicketNr = string.IsNullOrEmpty(qrCode) ? _NoTicketFound : qrCode;
+            await InvokeAsync(StateHasChanged);
+        }
+
+        if (!string.IsNullOrEmpty(qrCode))
+        {
+            var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
+            if (ticketRequest?.Participant != null)
+            {
+                await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
+            }
+        }
+    }
+
+    public async Task AddToSignInPlace(Participant participant)
+    {
+        if (participant == null)
+        {
+            return;
+        }
+
+        var openPlace = FindEmptySignInPlace();
+
+        if (openPlace == null)
+        {
+            return;
+        }
+
+        openPlace.Participant = participant;
+
+        _DataStore.AddOrUpdate(openPlace);
+
+        Participants.Remove(participant);
+        _DataStore.Delete(participant);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private ParticipantSignInPlace FindEmptySignInPlace()
+    {
+        return ParticipantSignInPlaces.OrderBy(a => a.Id).FirstOrDefault(x => x.Participant == null);
+    }
+
+    private async Task AddParticipantAsync(Participant participant)
+    {
+        if (participant == null)
+        {
+            return;
+        }
+
+        var oldParticipant = Participants
+                                .Concat(ParticipantSignInPlaces.Where(x => x.Participant != null).Select(x => x.Participant))
+                                .Concat(_DataStore.Load<SignInProtocol>().Where(x => x.Participant != null).Select(x => x.Participant))
+                                .FirstOrDefault(x => x.Id == participant.Id);
+        if (oldParticipant == null)
+        {
+            _DataStore.AddOrUpdate(participant);
+            Participants.Add(participant);
+
+            await _JSRuntime.InvokeAsync<string>("PlayAudio", "newParticipantSound");
+            AnimationClass = "glow-shadow";
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+            AnimationClass = "";
+        }
+        else
+        {
+            var oldId = Participants.IndexOf(oldParticipant);
+            if (oldId >= 0)
+            {
+                Participants.Remove(oldParticipant);
+                Participants.Insert(oldId, participant);
+                _DataStore.AddOrUpdate(participant);
+            }
+            else
+            {
+                var participantInSignInPlace = ParticipantSignInPlaces.FirstOrDefault(x => x.Participant == oldParticipant);
+                if (participantInSignInPlace != null)
+                {
+                    participantInSignInPlace.Participant = participant;
+                    _DataStore.AddOrUpdate(participantInSignInPlace);
+                }
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void ResetTimerInterval()
+    {
+        _InactiveTimer.Stop();
+        _InactiveTimer.Start();
+    }
+
+    private void UserInactive(Object source, ElapsedEventArgs e)
+    {
+        _NavigationManager.NavigateTo(string.Empty);
+    }
+
+
+    #region IDisposable
+    void IDisposable.Dispose()
+    {
+        _BackgroundTrigger.Trigger -= Trigger;
+    }
+    #endregion
+
 }

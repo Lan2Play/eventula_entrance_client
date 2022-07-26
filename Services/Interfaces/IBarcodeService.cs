@@ -1,7 +1,6 @@
-﻿namespace EventulaEntranceClient.Services.Interfaces
+﻿namespace EventulaEntranceClient.Services.Interfaces;
+
+public interface IBarcodeService
 {
-    public interface IBarcodeService
-    {
-       string BarcodeTextFromImage(byte[] image);
-    }
+   string BarcodeTextFromImage(byte[] image);
 }

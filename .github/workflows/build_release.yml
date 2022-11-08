@@ -47,7 +47,7 @@ jobs:
       shell: pwsh
       working-directory: ${{ github.workspace }}\bin\Desktop
     - name: upload artifact windows client x64 msi
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: EventulaEntranceClient
         path: ./bin/Desktop/EventulaEntranceClient_Setup.exe

@@ -84,7 +84,7 @@ jobs:
     - name: Build
       run: electronize build /target linux
     - name: list build
-      run: tree ${{ github.workspace }}/bin
+      run: tree ${{ github.workspace }}
     # - name: rename
     #   run: Rename-Item -Path "EventulaEntranceClient Setup*.exe" -NewName "EventulaEntranceClient_Setup.exe"
     #   shell: pwsh

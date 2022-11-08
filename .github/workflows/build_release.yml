@@ -10,14 +10,19 @@ on:
 
 env:
   DOTNET6_VERSION: '6.0' # The .NET SDK version to use
+  DOTNET5_VERSION: '5.0' # still used for electron
 
 jobs:
-
   build_windows_client_x64:
     runs-on: windows-2019
     steps:
     - name: checkout
       uses: actions/checkout@v2
+    # still used for electron
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+      with:
+       dotnet-version: ${{ env.DOTNET5_VERSION }}
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v1
       with:
@@ -54,6 +59,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
+      # still used for electron
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+      with:
+       dotnet-version: ${{ env.DOTNET5_VERSION }}
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v1
       with:

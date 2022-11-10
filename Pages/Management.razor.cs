@@ -44,13 +44,13 @@ public partial class Management
 
     #endregion
 
-    private const int _ParticipantSignInPlacesCount = 12;
+    private int _ParticipantSignInPlacesCount;
 
     private const string _NoTicketFound = "No Ticket found";
 
     private string _LastTicket = string.Empty;
 
-    public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
+    public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } 
 
     public List<Participant> Participants { get; set; } = new List<Participant>();
 
@@ -64,7 +64,6 @@ public partial class Management
 
     private System.Timers.Timer _InactiveTimer;
 
-
     protected override void OnInitialized()
     {
         _InactiveTimer = new System.Timers.Timer(TimeSpan.FromSeconds(120).TotalMilliseconds);
@@ -73,7 +72,8 @@ public partial class Management
 
         _BackgroundTrigger.Trigger += Trigger;
         _UiNotifyService.NewParticipant += OnNewParticipant;
-
+        _ParticipantSignInPlacesCount = _SettingsService.RetrieveSignInPlaceCount();
+        ParticipantSignInPlaces = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
         Participants.AddRange(_DataStore.Load<Participant>());
 
         var savedParticipants = _DataStore.Load<ParticipantSignInPlace>();

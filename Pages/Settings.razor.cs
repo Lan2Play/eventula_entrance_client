@@ -28,6 +28,7 @@ public partial class Settings
     public bool EnableTwoGVerification;
     public bool EnableTermsChecked;
     public int TestTimeInMinutes;
+    public int SignInPlaceCount;
     public string CustomBackgroundImage;
 
 
@@ -37,7 +38,7 @@ public partial class Settings
         {
             throw new Exception("Saving the settings is disabled while active participants are in place");
         }
-        if (_SettingsService.SaveSettings(EventulaToken, EventulaApiBaseAddress, EnableCovidTest, EnableTwoGVerification, EnableTermsChecked, TestTimeInMinutes, CustomBackgroundImage))
+        if (_SettingsService.SaveSettings(EventulaToken, EventulaApiBaseAddress, EnableCovidTest, EnableTwoGVerification, EnableTermsChecked, TestTimeInMinutes, CustomBackgroundImage,SignInPlaceCount))
         {
             _NavigationManager.NavigateTo("");
         }
@@ -83,6 +84,7 @@ public partial class Settings
         EnableTermsChecked = _SettingsService.RetrieveEnableTermsChecked();
         TestTimeInMinutes = _SettingsService.RetrieveTestTimeInMinutes();
         CustomBackgroundImage = _SettingsService.RetrieveCustomBackgroundImage();
+        SignInPlaceCount = _SettingsService.RetrieveSignInPlaceCount();
     }
 
     protected void Cancel()

@@ -21,5 +21,7 @@ public class Settings : IStoreObject
     public int TestTimeInMinutes { get; set; }
     
     public string CustomBackgroundImage { get; set; }
+    
+    public int SignInPlaceCount { get; set; }
 
 }

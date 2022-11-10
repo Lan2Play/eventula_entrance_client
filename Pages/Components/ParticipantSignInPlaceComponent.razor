@@ -23,7 +23,7 @@
 				</div>
 				<div class="mt-2">
 					<button class="btn btn-danger" type="button" disabled="@HasNoParticipant" onclick="@(() => Delete())">
-						<span class="oi oi-trash" title="trash" aria-hidden="true"></span>
+						<span class="oi oi-trash" title="remove from grid" aria-hidden="true"></span>
 					</button>
 				</div>
 			}
@@ -35,6 +35,12 @@
 				</div>
 			}
 		</div>
+		@if (SignInPlace.Participant != null && SignInPlace.Participant.SignedIn)
+		{
+			<div class="row mt-3" style="color: red;">
+				Participant is already signed in
+			</div>
+		}
 
 		<div class="row mb-3 mt-2">
 			@if (_SettingsService.RetrieveEnableCovidTest())

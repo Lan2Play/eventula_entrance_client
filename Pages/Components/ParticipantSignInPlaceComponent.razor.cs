@@ -24,11 +24,14 @@ public partial class ParticipantSignInPlaceComponent
     [Inject]
     private EventulaApiService _EventulaApiService { get; set; }
 
+    [Inject]
+    private SettingsService _SettingsService{ get; set; }
+
     #endregion
 
     #region Fields
 
-    private const int _TimerTargetSeconds = 15 * 60;
+    private int _TimerTargetSeconds;
     private static System.Timers.Timer _Timer;
     #endregion
 
@@ -71,13 +74,13 @@ public partial class ParticipantSignInPlaceComponent
 
     public bool IsCoronaChecked
     {
-        get => SignInPlace != null && SignInPlace.CoronaCheck != default;
+        get => _SettingsService.RetrieveEnableTwoGVerification() ? SignInPlace != null && SignInPlace.CoronaCheck != default : true;
         set => ActionWithSave(() => SignInPlace.CoronaCheck = value ? DateTimeOffset.Now : default);
     }
 
     public bool IsCoronaTestChecked
     {
-        get => SignInPlace != null && SignInPlace.CoronaTestCheck != default;
+        get => _SettingsService.RetrieveEnableCovidTest() ? SignInPlace != null && SignInPlace.CoronaTestCheck != default : true;
         set => ActionWithSave(() => SignInPlace.CoronaTestCheck = value ? DateTimeOffset.Now : default);
     }
 
@@ -85,7 +88,7 @@ public partial class ParticipantSignInPlaceComponent
 
     public bool IsTermsChecked
     {
-        get => SignInPlace != null && SignInPlace.Terms != default;
+        get => _SettingsService.RetrieveEnableTermsChecked() ? SignInPlace != null && SignInPlace.Terms != default : true;
         set => ActionWithSave(() => SignInPlace.Terms = value ? DateTimeOffset.Now : default);
     }
 
@@ -99,6 +102,7 @@ public partial class ParticipantSignInPlaceComponent
 
     public void StartTimer()
     {
+        _TimerTargetSeconds = _SettingsService.RetrieveTestTimeInMinutes() * 60;
         SignInPlace.TimerStartTime = DateTimeOffset.Now;
         _DataStore.AddOrUpdate(SignInPlace);
     }
@@ -132,9 +136,8 @@ public partial class ParticipantSignInPlaceComponent
         catch (Exception ex)
         {
             _Logger.LogError(ex, $"Error set is paid for participant {SignInPlace.Participant.Id}");
+            throw;
         }
-
-        return false;
     }
 
     public async Task SignIn()
@@ -164,6 +167,7 @@ public partial class ParticipantSignInPlaceComponent
         catch (Exception ex)
         {
             _Logger.LogError(ex, $"Error signing in participant {SignInPlace.Participant.Id}");
+            throw;
         }
     }
 

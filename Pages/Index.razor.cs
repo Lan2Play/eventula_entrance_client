@@ -16,9 +16,13 @@ public partial class Index
     [Inject]
     private ProtectionService _ProtectionService { get; set; }
 
+    [Inject]
+    private SettingsService _SettingsService{ get; set; }
+
     #endregion
 
     private string _AccessCode = string.Empty;
+    private string _Logo = string.Empty;
 
     public string AccessCode
     {
@@ -72,5 +76,18 @@ public partial class Index
     protected void CloseAlert()
     {
         ErrorHidden = true;
+    }
+
+
+    protected override void OnInitialized()
+    {
+        if(string.IsNullOrEmpty(_SettingsService.RetrieveCustomBackgroundImage()))
+        {
+            _Logo = "../images/logo_main.webp";
+        }
+        else
+        {
+            _Logo = _SettingsService.RetrieveCustomBackgroundImage();
+        }
     }
 }

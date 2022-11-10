@@ -22,12 +22,14 @@ builder.Services.AddSingleton<IDataStore, LiteDbDataStore>();
 builder.Services.AddSingleton<ProtectionService>(sp => new ProtectionService(pinHash));
 builder.Services.AddSingleton<IBarcodeService, ZXingBarcodeService>();
 
-builder.Services.AddScoped<EventulaTokenService>();
+builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<EventulaApiService>();
 
 builder.Services.AddHttpClient(nameof(EventulaApiService), client =>
 {
-    client.BaseAddress = new System.Uri(builder.Configuration.GetValue<string>("EventulaApiBaseAddress"));
+    var serviceProvider = builder.Services.BuildServiceProvider();
+    var settingsService = serviceProvider.GetService<SettingsService>();
+    client.BaseAddress = new System.Uri(settingsService.RetrieveEventulaApiBaseAddress());
 }).ConfigurePrimaryHttpMessageHandler(sp =>
 {
     var cookieContainer = sp.GetRequiredService<CookieContainer>();
@@ -39,7 +41,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

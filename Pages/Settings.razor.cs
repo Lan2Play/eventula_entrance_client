@@ -15,27 +15,41 @@ public partial class Settings
     [Inject]
     private NavigationManager _NavigationManager { get; set; }
     [Inject]
-    private EventulaTokenService _EventulaTokenService { get; set; }
+    private SettingsService _SettingsService { get; set; }
+    [Inject]
+    private IDataStore _DataStore { get; set; }
 
     #endregion
 
+    public bool ActiveParticipants;
     public string EventulaToken;
+    public string EventulaApiBaseAddress;
+    public bool EnableCovidTest;
+    public bool EnableTwoGVerification;
+    public bool EnableTermsChecked;
+    public int TestTimeInMinutes;
+    public string CustomBackgroundImage;
 
-    protected void SaveToken()
+
+    protected void Save()
     {
-        if (_EventulaTokenService.SaveToken(EventulaToken))
+        if (ActiveParticipants)
+        {
+            throw new Exception("Saving the settings is disabled while active participants are in place");
+        }
+        if (_SettingsService.SaveSettings(EventulaToken, EventulaApiBaseAddress, EnableCovidTest, EnableTwoGVerification, EnableTermsChecked, TestTimeInMinutes, CustomBackgroundImage))
         {
             _NavigationManager.NavigateTo("");
         }
         else
         {
-            _NavigationManager.NavigateTo("Error");
+            throw new Exception("Error while saving settings");
         }
     }
 
     protected void Submit()
     {
-        SaveToken();
+        Save();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -53,10 +67,22 @@ public partial class Settings
             _NavigationManager.NavigateTo("");
         }
     }
+    protected override void OnInitialized()
+    {
+        var filtered = _DataStore.Load<ParticipantSignInPlace>().Where(e => e.Participant !=  null).ToArray();
+        ActiveParticipants = filtered.Count() > 0 ? true : false ;
+
+    }
 
     protected override void OnParametersSet()
     {
-        EventulaToken = _EventulaTokenService.RetrieveToken();
+        EventulaToken = _SettingsService.RetrieveToken();
+        EventulaApiBaseAddress = _SettingsService.RetrieveEventulaApiBaseAddress();
+        EnableCovidTest = _SettingsService.RetrieveEnableCovidTest();
+        EnableTwoGVerification = _SettingsService.RetrieveEnableTwoGVerification();
+        EnableTermsChecked = _SettingsService.RetrieveEnableTermsChecked();
+        TestTimeInMinutes = _SettingsService.RetrieveTestTimeInMinutes();
+        CustomBackgroundImage = _SettingsService.RetrieveCustomBackgroundImage();
     }
 
     protected void Cancel()

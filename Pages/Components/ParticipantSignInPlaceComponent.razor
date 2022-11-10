@@ -30,47 +30,57 @@
 			else
 			{
 				<div class="flex-grow-1 overflow-hidden text-start m-2">
-					<p class="m-0 text-nobreak text-nowrap text-truncate">Nicht belegt</p>
+					<p class="m-0 text-nobreak text-nowrap text-truncate">Not occupied</p>
 					<p class="m-0 text-muted text-nobreak text-nowrap text-truncate">&nbsp;</p>
 				</div>
 			}
 		</div>
 
 		<div class="row mb-3 mt-2">
-			<div class="col-auto">
-				<button class="btn btn-primary" type="button" disabled="@HasNoParticipant" onclick="@(() => StartTimer())">
-					<span class="oi oi-timer" title="timer" aria-hidden="true"></span>
-				</button>
-			</div>
-
-			<div class="col">
-				<div class="progress h-100">
-					<div class="progress-label" hidden="@(Progress <= 0)">@TimeLeft</div>
-					<div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress.ToString(CultureInfo.InvariantCulture)}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
+			@if (_SettingsService.RetrieveEnableCovidTest())
+			{
+				<div class="col-auto">
+					<button class="btn btn-primary" type="button" disabled="@HasNoParticipant" onclick="@(() => StartTimer())">
+						<span class="oi oi-timer" title="timer" aria-hidden="true"></span>
+					</button>
 				</div>
-			</div>
-		</div>
 
+				<div class="col">
+					<div class="progress h-100">
+						<div class="progress-label" hidden="@(Progress <= 0)">@TimeLeft</div>
+						<div class="progress-bar @(Progress >= 100 ? "bg-success" : "")" role="progressbar" style="@($"width: {Progress.ToString(CultureInfo.InvariantCulture)}%")" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@TimeLeft</div>
+					</div>
+				</div>
+				
+			}
+		</div>
 		<div class="row">
 			<div class="col mb-3">
 				<input type="checkbox" class="btn-check" id="btn-check-paid-@SignInPlace.Id" @bind="IsPaid" disabled="@IsPaidDisabled">
-				<label class="btn btn-outline-success w-100 h-100" for="btn-check-paid-@SignInPlace.Id">Bezahlt</label><br>
+				<label class="btn btn-outline-success w-100 h-100" for="btn-check-paid-@SignInPlace.Id">Paid</label><br>
 			</div>
 
-			<div class="col mb-3">
-				<input type="checkbox" class="btn-check" id="btn-check-corona-@SignInPlace.Id" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
-				<label class="btn btn-outline-success w-100 h-100" for="btn-check-corona-@SignInPlace.Id">2G Nachweis</label><br>
-			</div>
-
-			<div class="col mb-3">
-				<input type="checkbox" class="btn-check" id="btn-check-coronatest-@SignInPlace.Id" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
-				<label class="btn btn-outline-success w-100 h-100" for="btn-check-coronatest-@SignInPlace.Id">Test Negativ</label><br>
-			</div>
-
-			<div class="col mb-3">
-				<input type="checkbox" class="btn-check" id="btn-check-terms-@SignInPlace.Id" @bind="IsTermsChecked" disabled="@HasNoParticipant">
-				<label class="btn btn-outline-success w-100 h-100" for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
-			</div>
+			@if (_SettingsService.RetrieveEnableTwoGVerification())
+			{
+				<div class="col mb-3">
+					<input type="checkbox" class="btn-check" id="btn-check-corona-@SignInPlace.Id" @bind="IsCoronaChecked" disabled="@HasNoParticipant">
+					<label class="btn btn-outline-success w-100 h-100" for="btn-check-corona-@SignInPlace.Id">2G Verification</label><br>
+				</div>
+			}
+			@if (_SettingsService.RetrieveEnableCovidTest())
+			{
+				<div class="col mb-3">
+					<input type="checkbox" class="btn-check" id="btn-check-coronatest-@SignInPlace.Id" @bind="IsCoronaTestChecked" disabled="@IsCoronaTestDisabled">
+					<label class="btn btn-outline-success w-100 h-100" for="btn-check-coronatest-@SignInPlace.Id">Test negative</label><br>
+				</div>
+			}
+			@if (_SettingsService.RetrieveEnableTermsChecked())
+			{
+				<div class="col mb-3">
+					<input type="checkbox" class="btn-check" id="btn-check-terms-@SignInPlace.Id" @bind="IsTermsChecked" disabled="@HasNoParticipant">
+					<label class="btn btn-outline-success w-100 h-100" for="btn-check-terms-@SignInPlace.Id">Terms Checked</label><br>
+				</div>
+			}
 		</div>
 
 		<div class="row">

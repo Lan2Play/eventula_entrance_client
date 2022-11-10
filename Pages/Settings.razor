@@ -6,17 +6,56 @@
     <h1 class="mb-3 font-weight-normal text-center">Einstellungen</h1>
 
     <div class="form-group">
-        <label class="lg-font">Eventula Token</label>
+        <label class="lg-font">Eventula token</label>
         <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@EventulaToken" placeholder="Token" />
+    </div>    
+    <div class="form-group">
+        <label class="lg-font">Eventula api base address</label>
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@EventulaApiBaseAddress" placeholder="https://yoursite.com" />
+    </div>    
+    <div class="form-group">
+        <label class="lg-font">Custom background image address</label>
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@CustomBackgroundImage" placeholder="https://yoursite.com/logo.jpg" />
     </div>
+    <div class="form-group">
+        <label class="lg-font">Enable covid test</label>
+        <p><input type="checkbox" @bind="@EnableCovidTest" /></p>
+    </div>   
+    <div class="form-group">
+        <label class="lg-font">Test time in minutes</label>
+        <p><input type="number" @bind="@TestTimeInMinutes" /></p>
+    </div>
+    <div class="form-group">
+        <label class="lg-font">Enable 2G verification button</label>
+        <p><input type="checkbox" @bind="@EnableTwoGVerification" /></p>
+    </div>
+    <div class="form-group">
+        <label class="lg-font">Enable terms checked button</label>
+        <p><input type="checkbox" @bind="@EnableTermsChecked" /></p>
+    </div>
+
+
+
+        
+    
+
+
     <hr class="mb-4">
     <div class="form-group">
-        <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="submit">
-            Absenden
-        </button>
+        <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="submit" disabled="@ActiveParticipants">
+            @if (!@ActiveParticipants)
+            {
+                <text>Save</text>
+            }
+            else
+            {
+               <text>Saving disabled while active participants are in place</text> 
+            }
+        </button>     
+        
         <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="button"
                 @onclick="@Cancel">
-            Abbrechen
+            Abort
         </button>
     </div>
 </form>

@@ -19,13 +19,13 @@ public class EventulaApiService
     private readonly IHttpClientFactory _HttpClientFactory;
     private readonly ILogger<EventulaApiService> _Logger;
     private readonly CookieContainer _Cookies;
-    private readonly EventulaTokenService _EventulaTokenService;
+    private readonly SettingsService _SettingsService;
 
-    public EventulaApiService(IHttpClientFactory httpClientFactory, CookieContainer cookies, EventulaTokenService eventulaTokenService, ILogger<EventulaApiService> logger)
+    public EventulaApiService(IHttpClientFactory httpClientFactory, CookieContainer cookies, SettingsService settingsService, ILogger<EventulaApiService> logger)
     {
         _HttpClientFactory = httpClientFactory;
         _Cookies = cookies;
-        _EventulaTokenService = eventulaTokenService;
+        _SettingsService = settingsService;
         _Logger = logger;
     }
 
@@ -34,7 +34,7 @@ public class EventulaApiService
         using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
         await SetXcsrfHeader(httpClient);
-        SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
+        SetDefaultHeaders(httpClient, _SettingsService.RetrieveToken());
 
         var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantUrl, qrCode.Split('/').Last()));
 
@@ -53,7 +53,7 @@ public class EventulaApiService
         using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
         await SetXcsrfHeader(httpClient);
-        SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
+        SetDefaultHeaders(httpClient, _SettingsService.RetrieveToken());
 
         var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantPaidUrl, participant.Purchase.Id));
 
@@ -71,7 +71,7 @@ public class EventulaApiService
         using var httpClient = _HttpClientFactory.CreateClient(nameof(EventulaApiService));
 
         await SetXcsrfHeader(httpClient);
-        SetDefaultHeaders(httpClient, _EventulaTokenService.RetrieveToken());
+        SetDefaultHeaders(httpClient, _SettingsService.RetrieveToken());
 
         var getResult = await httpClient.GetAsync(string.Format(_UserApiParticipantSignInUrl, participant.Id));
 

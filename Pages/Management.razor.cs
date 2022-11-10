@@ -36,7 +36,7 @@ public partial class Management
     private EventulaApiService _EventulaApiService { get; set; }
 
     [Inject]
-    private EventulaTokenService _EventulaTokenService { get; set; }
+    private SettingsService _SettingsService{ get; set; }
 
 
     [Inject]
@@ -46,7 +46,7 @@ public partial class Management
 
     private const int _ParticipantSignInPlacesCount = 12;
 
-    private const string _NoTicketFound = "Kein Ticket gefunden";
+    private const string _NoTicketFound = "No Ticket found";
 
     private string _LastTicket = string.Empty;
 
@@ -126,9 +126,10 @@ public partial class Management
                 _NavigationManager.NavigateTo(string.Empty);
             }
 
-            var token = _EventulaTokenService.RetrieveToken();
+            var token = _SettingsService.RetrieveToken();
+            var eventulaApiBaseAddress = _SettingsService.RetrieveEventulaApiBaseAddress();
 
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(eventulaApiBaseAddress))
             {
                 _NavigationManager.NavigateTo($"settings?ac={accessCode}");
             }
@@ -175,7 +176,7 @@ public partial class Management
     {
         byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
         var qrCode = _BarcodeService.BarcodeTextFromImage(imageData);
-        _Logger.LogInformation($"QR Code found {qrCode}");
+        _Logger.LogInformation(string.IsNullOrEmpty(qrCode) ? "QR Code not found" : $"QR Code found {qrCode}");
 
         if (!_LastTicket.Equals(qrCode, StringComparison.OrdinalIgnoreCase))
         {

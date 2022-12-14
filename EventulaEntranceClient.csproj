@@ -8,7 +8,7 @@
 		<PackageReference Include="ElectronNET.API" Version="13.5.1" />
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 		<PackageReference Include="ZXing.Net" Version="0.16.8" />
-		<PackageReference Include="LiteDB" Version="5.0.12" />
+		<PackageReference Include="LiteDB" Version="5.0.13" />
 		<PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.10" />
 	</ItemGroup>
 	<ItemGroup>

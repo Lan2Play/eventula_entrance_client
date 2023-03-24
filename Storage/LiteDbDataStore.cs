@@ -15,7 +15,7 @@ public class LiteDbDataStore : IDataStore
         {
             Directory.CreateDirectory(folderPath);
         }
-
+        
         _LiteDatabase = new LiteDatabase(Path.Combine(folderPath, "LiteDb.db"));
     }
 

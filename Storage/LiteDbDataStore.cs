@@ -15,8 +15,7 @@ public class LiteDbDataStore : IDataStore
         {
             Directory.CreateDirectory(folderPath);
         }
-        // Windows fix for simultanious access
-        // _LiteDatabase = new LiteDatabase("Filename=" + Path.Combine(folderPath, "LiteDb.db") + ";Connection=Shared;");
+        
         _LiteDatabase = new LiteDatabase(Path.Combine(folderPath, "LiteDb.db"));
     }
 

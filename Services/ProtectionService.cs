@@ -5,19 +5,49 @@ namespace EventulaEntranceClient.Services;
 
 public class ProtectionService
 {
-    private string _PrivateAccessCodeHash = "ac3fbb3474801233a338e0f27af3477773ad8772d35c87f70d9489837babb35a";
+    private string _AdminAccessCodeHash;
+    private string _UserAccessCodeHash;
 
-    public ProtectionService(string privateAccessCodeHash)
+    private readonly SettingsService _SettingsService;
+    public ProtectionService(SettingsService settingsService)
     {
-        if(!string.IsNullOrEmpty(privateAccessCodeHash))
-        {
-            _PrivateAccessCodeHash = privateAccessCodeHash;
-        }
+        _SettingsService = settingsService;
+
+        
+
     }
 
-    public bool CheckPrivateAccessCodeHash(string accessCodeHash)
+    public bool CheckAdminAccessCodeHash(string accessCodeHash)
     {
-        return _PrivateAccessCodeHash.Equals(accessCodeHash);
+        UpdatePins();
+        return _AdminAccessCodeHash.Equals(accessCodeHash);
+    }
+
+    public bool CheckUserAccessCodeHash(string accessCodeHash)
+    {
+        UpdatePins();
+        return _AdminAccessCodeHash.Equals(accessCodeHash) || _UserAccessCodeHash.Equals(accessCodeHash);
+    }
+
+    private void UpdatePins()
+    {
+        if (!string.IsNullOrEmpty(_SettingsService.RetrieveAdminPin()))
+        {
+            _AdminAccessCodeHash = _SettingsService.RetrieveAdminPin();
+        }        
+        else
+        {
+            _AdminAccessCodeHash = "c50281c3dd92d836d2ba7702fad19f778404cddd49059afc7b2e6e537f436ea7";
+        }
+        
+        if (!string.IsNullOrEmpty(_SettingsService.RetrieveUserPin()))
+        {
+            _UserAccessCodeHash = _SettingsService.RetrieveUserPin();
+        }
+        else
+        {
+            _UserAccessCodeHash = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+        }      
     }
 
     public string CalculateHash(string accessCode)

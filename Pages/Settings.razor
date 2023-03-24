@@ -14,6 +14,14 @@
         <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@EventulaApiBaseAddress" placeholder="https://yoursite.com" />
     </div>    
     <div class="form-group">
+        <label class="lg-font">Admin Pin (sha256)</label>
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@AdminPin" />
+    </div>    
+    <div class="form-group">
+        <label class="lg-font">User Pin (sha256)</label>
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@UserPin" />
+    </div>    
+    <div class="form-group">
         <label class="lg-font">Number of Sign in Places on the grid (default 12)</label>
         <p><input type="number" @bind="@SignInPlaceCount" /></p>
     </div>

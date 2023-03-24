@@ -25,7 +25,7 @@ The Eventula Entrance Client is an additional peace of software for windows and 
 
 ## Usage
 
-- Download the [latest release](https://github.com/Lan2Play/eventula_entrance_client/releases/tag/v1.5.1)
+- Download the [latest release](https://github.com/Lan2Play/eventula_entrance_client/releases/latest)
 - Login with your webbrowser to your Eventula Manager instance with an admin account and open the token wizzard (for example `https://YOURDOMAIN.TDL/account/tokens/wizzard/start/EventulaEntranceClient`) and create a token
 - open the entrance client, unlock with the pin 4637 (currently hardcoded, sorry), go to settings and configure your Eventula api base address (for example `https://YOURDOMAIN.TDL` ), paste the generated Eventula token and save the settings
 - you should be able to use the entrance client now, check out the other settings :)

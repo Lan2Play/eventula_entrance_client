@@ -16,7 +16,14 @@ public class LiteDbDataStore : IDataStore
             Directory.CreateDirectory(folderPath);
         }
         
-        _LiteDatabase = new LiteDatabase(Path.Combine(folderPath, "LiteDb.db"));
+        if (OperatingSystem.IsWindows())
+        {
+            _LiteDatabase = new LiteDatabase("Filename=" + Path.Combine(folderPath, "LiteDb.db") + ";Connection=Shared;");
+        }
+        else
+        {
+            _LiteDatabase = new LiteDatabase(Path.Combine(folderPath, "LiteDb.db"));
+        }
     }
 
     public void AddOrUpdate<T>(T data)

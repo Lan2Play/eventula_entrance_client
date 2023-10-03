@@ -32,7 +32,7 @@ The Eventula Entrance Client is an additional peace of software for windows and 
 
 ## Development
 
-The entrance client is built with dotnet 7 and electron. You should be able to build and run it just with the current [dotnet sdk](https://dotnet.microsoft.com/en-us/download). 
+The entrance client is built with dotnet 6 and electron. You should be able to build and run it just with the current [dotnet sdk](https://dotnet.microsoft.com/en-us/download). 
 We recommend to use VSCode or Visual Studio for the development and debugging, both should just work out of the box.
 
 ## Future

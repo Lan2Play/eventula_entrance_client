@@ -9,8 +9,9 @@ on:
     - '!**'
 
 env:
-  DOTNET6_VERSION: '6.0' # The .NET SDK version to use
-  DOTNET5_VERSION: '5.0' # still used for electron
+  # DOTNET6_VERSION: '6.0' # The .NET SDK version to use
+  # DOTNET5_VERSION: '5.0' # still used for electron
+  DOTNET7_VERSION: '7.0' # still used for electron
 
 jobs:
   build_windows_client_x64:
@@ -18,15 +19,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    # still used for electron
-    - name: Setup .NET 5
+
+    - name: Setup .NET 7
       uses: actions/setup-dotnet@v3
       with:
-       dotnet-version: ${{ env.DOTNET5_VERSION }}
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET6_VERSION }}
+        dotnet-version: ${{ env.DOTNET7_VERSION }}
     - name: Install dependencies
       run: dotnet tool install ElectronNET.CLI -g
     - name: get Version
@@ -59,15 +56,10 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v3
-      # still used for electron
-    - name: Setup .NET 5
+    - name: Setup .NET 7
       uses: actions/setup-dotnet@v3
       with:
-       dotnet-version: ${{ env.DOTNET5_VERSION }}
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET6_VERSION }}
+        dotnet-version: ${{ env.DOTNET7_VERSION }}
     - name: Install dependencies
       run: dotnet tool install ElectronNET.CLI -g
     - name: get Version

@@ -30,8 +30,6 @@ public partial class Settings
     public int TestTimeInMinutes;
     public int SignInPlaceCount;
     public string CustomBackgroundImage;
-    public string AdminPin;
-    public string UserPin;
 
 
     protected void Save()
@@ -40,7 +38,7 @@ public partial class Settings
         {
             throw new Exception("Saving the settings is disabled while active participants are in place");
         }
-        if (_SettingsService.SaveSettings(EventulaToken, EventulaApiBaseAddress, EnableCovidTest, EnableTwoGVerification, EnableTermsChecked, TestTimeInMinutes, CustomBackgroundImage, SignInPlaceCount, AdminPin, UserPin))
+        if (_SettingsService.SaveSettings(EventulaToken, EventulaApiBaseAddress, EnableCovidTest, EnableTwoGVerification, EnableTermsChecked, TestTimeInMinutes, CustomBackgroundImage,SignInPlaceCount))
         {
             _NavigationManager.NavigateTo("");
         }
@@ -55,12 +53,12 @@ public partial class Settings
         Save();
     }
 
-    public override async Task SetParametersAsync(ParameterView parameters)
+    protected override void OnAfterRender(bool firstRender)
     {
         var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
         {
-            if (!_ProtectionService.CheckAdminAccessCodeHash(accessCode))
+            if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
             {
                 _NavigationManager.NavigateTo("");
             }
@@ -69,13 +67,12 @@ public partial class Settings
         {
             _NavigationManager.NavigateTo("");
         }
-        await base.SetParametersAsync(parameters);
     }
-
     protected override void OnInitialized()
     {
         var filtered = _DataStore.Load<ParticipantSignInPlace>().Where(e => e.Participant !=  null).ToArray();
         ActiveParticipants = filtered.Count() > 0 ? true : false ;
+
     }
 
     protected override void OnParametersSet()
@@ -88,8 +85,6 @@ public partial class Settings
         TestTimeInMinutes = _SettingsService.RetrieveTestTimeInMinutes();
         CustomBackgroundImage = _SettingsService.RetrieveCustomBackgroundImage();
         SignInPlaceCount = _SettingsService.RetrieveSignInPlaceCount();
-        AdminPin = _SettingsService.RetrieveAdminPin();
-        UserPin = _SettingsService.RetrieveUserPin();
     }
 
     protected void Cancel()

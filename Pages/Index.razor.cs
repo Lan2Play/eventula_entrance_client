@@ -62,7 +62,7 @@ public partial class Index
 
         var hash = _ProtectionService.CalculateHash(AccessCode);
 
-        if (_ProtectionService.CheckUserAccessCodeHash(hash))
+        if (_ProtectionService.CheckPrivateAccessCodeHash(hash))
         {
             _NavigationManager.NavigateTo($"{route}?ac={hash}");
         }

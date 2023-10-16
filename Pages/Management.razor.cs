@@ -114,7 +114,7 @@ public partial class Management
 
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
             {
-                if (!_ProtectionService.CheckUserAccessCodeHash(accessCode))
+                if (!_ProtectionService.CheckPrivateAccessCodeHash(accessCode))
                 {
                     _NavigationManager.NavigateTo(string.Empty);
                 }

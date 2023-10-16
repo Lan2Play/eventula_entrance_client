@@ -13,17 +13,16 @@ builder.Services.AddServerSideBlazor();
 // Webcam pictures need to be transferred via SignalR and they need a bigger message size
 builder.Services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
 
-var pinHash = builder.Configuration.GetValue<string>("PinSha256");
 
 builder.Services.AddSingleton<CookieContainer>();
 builder.Services.AddSingleton<BackgroundTrigger>();
 builder.Services.AddSingleton<UiNotifyService>();
 builder.Services.AddSingleton<IDataStore, LiteDbDataStore>();
-builder.Services.AddSingleton<ProtectionService>(sp => new ProtectionService(pinHash));
 builder.Services.AddSingleton<IBarcodeService, ZXingBarcodeService>();
 
 builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<EventulaApiService>();
+builder.Services.AddScoped<ProtectionService>();
 
 builder.Services.AddHttpClient(nameof(EventulaApiService), client =>
 {

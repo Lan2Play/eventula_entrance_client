@@ -12,7 +12,7 @@ public class SettingsService
         _Logger = logger;
     }
 
-    public bool SaveSettings(string token, string eventulaApiBaseAddress, bool enableCovidTest, bool enableTwoGVerification, bool enableTermsChecked, int testTimeInMinutes, string customBackgroundImage, int signInPlaceCount)
+    public bool SaveSettings(string token, string eventulaApiBaseAddress, bool enableCovidTest, bool enableTwoGVerification, bool enableTermsChecked, int testTimeInMinutes, string customBackgroundImage, int signInPlaceCount, string adminPin, string userPin)
     {
         try
         {
@@ -26,7 +26,10 @@ public class SettingsService
                 EnableTermsChecked = enableTermsChecked,
                 TestTimeInMinutes = testTimeInMinutes,
                 CustomBackgroundImage = customBackgroundImage,
-                SignInPlaceCount = signInPlaceCount
+                SignInPlaceCount = signInPlaceCount,
+                AdminPin = adminPin,
+                UserPin = userPin
+
             }) ;
 
             return true;
@@ -70,5 +73,12 @@ public class SettingsService
     {
         return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.CustomBackgroundImage;
     }    
-
+    public string RetrieveAdminPin()
+    {
+        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.AdminPin;
+    }     
+    public string RetrieveUserPin()
+    {
+        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.UserPin;
+    }    
 }

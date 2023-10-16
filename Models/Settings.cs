@@ -24,4 +24,6 @@ public class Settings : IStoreObject
     
     public int SignInPlaceCount { get; set; }
 
+    public string AdminPin { get; set; }
+    public string UserPin { get; set; }
 }

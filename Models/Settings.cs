@@ -26,6 +26,4 @@ public class Settings : IStoreObject
 
     public string AdminPin { get; set; }
     public string UserPin { get; set; }
-
-
 }

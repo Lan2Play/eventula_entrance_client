@@ -18,11 +18,11 @@ builder.Services.AddSingleton<CookieContainer>();
 builder.Services.AddSingleton<BackgroundTrigger>();
 builder.Services.AddSingleton<UiNotifyService>();
 builder.Services.AddSingleton<IDataStore, LiteDbDataStore>();
-builder.Services.AddSingleton<ProtectionService>(sp => new ProtectionService(builder.Services.BuildServiceProvider().GetService<SettingsService>()));
 builder.Services.AddSingleton<IBarcodeService, ZXingBarcodeService>();
 
 builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<EventulaApiService>();
+builder.Services.AddScoped<ProtectionService>();
 
 builder.Services.AddHttpClient(nameof(EventulaApiService), client =>
 {

@@ -12,9 +12,6 @@ public class ProtectionService
     public ProtectionService(SettingsService settingsService)
     {
         _SettingsService = settingsService;
-
-        
-
     }
 
     public bool CheckAdminAccessCodeHash(string accessCodeHash)

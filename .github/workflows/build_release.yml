@@ -44,7 +44,7 @@ jobs:
       shell: pwsh
       working-directory: ${{ github.workspace }}\bin\Desktop
     - name: upload artifact windows client x64 msi
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: EventulaEntranceClient
         path: ./bin/Desktop/EventulaEntranceClient_Setup.exe
@@ -79,7 +79,7 @@ jobs:
       run: mv EventulaEntranceClient*.AppImage EventulaEntranceClient.AppImage
       working-directory: ${{ github.workspace }}/bin/Desktop
     - name: upload artifact linux client x64 appimage
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: EventulaEntranceClientLinux
         path: ./bin/Desktop/EventulaEntranceClient.AppImage
@@ -94,7 +94,7 @@ jobs:
      runs-on: ubuntu-latest
      steps:
      - name: get artifacts
-       uses: actions/download-artifact@v3
+       uses: actions/download-artifact@v4
      - name: Display structure of downloaded files
        run: ls -R
      - name: Release

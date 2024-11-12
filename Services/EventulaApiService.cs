@@ -89,22 +89,25 @@ public class EventulaApiService
     {
         var csrfCookieUrl = new Uri(httpClient.BaseAddress, _CsrfCookieUrl);
 
-
-        var csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
-
-        var csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
+        var csrfToken = GetCsrfToken(csrfCookieUrl);
 
         if (csrfToken == null)
         {
-            var getCsrfResult = await httpClient.GetAsync(_CsrfCookieUrl);
-            csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
-            csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
+            await httpClient.GetAsync(_CsrfCookieUrl);
+            csrfToken = GetCsrfToken(csrfCookieUrl);
         }
 
         if (csrfToken != null)
         {
             httpClient.DefaultRequestHeaders.Add("X-CSRF-Token", csrfToken.Value);
         }
+    }
+
+    private Cookie GetCsrfToken(Uri csrfCookieUrl)
+    {
+        var csrfCookies = _Cookies.GetCookies(csrfCookieUrl);
+        var csrfToken = csrfCookies.FirstOrDefault(x => x.Name.Equals("XSRF-TOKEN", StringComparison.Ordinal));
+        return csrfToken;
     }
 
     private static void SetDefaultHeaders(HttpClient httpClient, string token)

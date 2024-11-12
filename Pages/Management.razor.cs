@@ -190,7 +190,14 @@ public partial class Management
             var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
             if (ticketRequest?.Participant != null)
             {
-                await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
+                if(ticketRequest.Participant.Revoked)
+                {
+                    await _JSRuntime.InvokeAsync<string>("PlayAudio", "revokedParticipantSound");
+                }
+                else
+                {
+                    await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
+                }
             }
         }
     }

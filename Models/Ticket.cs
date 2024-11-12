@@ -1,5 +1,4 @@
 ﻿using EventulaEntranceClient.Converter;
-using EventulaEntranceClient.Storage;
 using LiteDB;
 using System.Text.Json.Serialization;
 
@@ -86,6 +85,9 @@ public class Participant : IStoreObject
 
     [JsonPropertyName("seat")]
     public Seat Seat { get; set; }
+
+    [JsonPropertyName("revoked")]
+    public bool Revoked { get; set; }
 }
 
 public class User

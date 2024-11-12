@@ -77,15 +77,10 @@ app.MapFallbackToPage("/_Host");
 
 await app.StartAsync();
 
-if(!builder.Environment.IsDevelopment())
+if (HybridSupport.IsElectronActive)
 {
-    await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { AutoHideMenuBar = true, Fullscreen = true }).ConfigureAwait(false);
-
-    //// Removes the top menu
-    //browserWindow.RemoveMenu();
-
-    //// Starts in fullscreen mode
-    //browserWindow.SetFullScreen(true);
+    var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { AutoHideMenuBar = true, Fullscreen = true }).ConfigureAwait(false);
+    window.OnClosed += () => Electron.App.Exit();
 }
 
 await app.WaitForShutdownAsync().ConfigureAwait(false);

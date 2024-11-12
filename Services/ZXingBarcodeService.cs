@@ -1,5 +1,6 @@
 ﻿using EventulaEntranceClient.Services.Interfaces;
-
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using ZXing.ImageSharp;
 
 namespace EventulaEntranceClient.Services;

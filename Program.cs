@@ -1,4 +1,5 @@
 using ElectronNET.API;
+using ElectronNET.API.Entities;
 using EventulaEntranceClient.Services;
 using EventulaEntranceClient.Services.Interfaces;
 using System.Net;
@@ -9,6 +10,7 @@ builder.WebHost.UseElectron(args);  // add this line here
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddElectron();
 
 // Webcam pictures need to be transferred via SignalR and they need a bigger message size
 builder.Services.AddSignalR(e => { e.MaximumReceiveMessageSize = 102400000; });
@@ -24,11 +26,10 @@ builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<EventulaApiService>();
 builder.Services.AddScoped<ProtectionService>();
 
-builder.Services.AddHttpClient(nameof(EventulaApiService), client =>
+builder.Services.AddHttpClient(nameof(EventulaApiService), (serviceProvider, client) =>
 {
-    var serviceProvider = builder.Services.BuildServiceProvider();
     var settingsService = serviceProvider.GetService<SettingsService>();
-    client.BaseAddress = new System.Uri(settingsService.RetrieveEventulaApiBaseAddress());
+    client.BaseAddress = new Uri(settingsService.RetrieveEventulaApiBaseAddress());
 }).ConfigurePrimaryHttpMessageHandler(sp =>
 {
     var cookieContainer = sp.GetRequiredService<CookieContainer>();
@@ -74,16 +75,17 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-Task.Run(async () =>
-    {
-        var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+await app.StartAsync();
 
-        // Removes the top menu
-        browserWindow.RemoveMenu();
+if(!builder.Environment.IsDevelopment())
+{
+    await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { AutoHideMenuBar = true, Fullscreen = true }).ConfigureAwait(false);
 
-        // Starts in fullscreen mode
-        browserWindow.SetFullScreen(true);
-    }
-);
+    //// Removes the top menu
+    //browserWindow.RemoveMenu();
 
-app.Run();
+    //// Starts in fullscreen mode
+    //browserWindow.SetFullScreen(true);
+}
+
+await app.WaitForShutdownAsync().ConfigureAwait(false);

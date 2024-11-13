@@ -9,40 +9,41 @@ public partial class Settings
     #region
 
     [Inject]
-    private ILogger<Settings> _Logger { get; set; }
+    private ProtectionService ProtectionService { get; set; }
+
     [Inject]
-    private ProtectionService _ProtectionService { get; set; }
+    private NavigationManager NavigationManager { get; set; }
+
     [Inject]
-    private NavigationManager _NavigationManager { get; set; }
+    private SettingsService SettingsService { get; set; }
+
     [Inject]
-    private SettingsService _SettingsService { get; set; }
-    [Inject]
-    private IDataStore _DataStore { get; set; }
+    private IDataStore DataStore { get; set; }
 
     #endregion
 
-    public bool ActiveParticipants;
-    public string EventulaToken;
-    public string EventulaApiBaseAddress;
-    public bool EnableCovidTest;
-    public bool EnableTwoGVerification;
-    public bool EnableTermsChecked;
-    public int TestTimeInMinutes;
-    public int SignInPlaceCount;
-    public string CustomBackgroundImage;
-    public string AdminPin;
-    public string UserPin;
-
+    private bool _ActiveParticipants;
+    private string _EventulaToken;
+    private string _EventulaApiBaseAddress;
+    private bool _EnableCovidTest;
+    private bool _EnableTwoGVerification;
+    private bool _EnableTermsChecked;
+    private int _TestTimeInMinutes;
+    private int _SignInPlaceCount;
+    private string _CustomBackgroundImage;
+    private string _AdminPin;
+    private string _UserPin;
 
     protected void Save()
     {
-        if (ActiveParticipants)
+        if (_ActiveParticipants)
         {
             throw new Exception("Saving the settings is disabled while active participants are in place");
         }
-        if (_SettingsService.SaveSettings(EventulaToken, EventulaApiBaseAddress, EnableCovidTest, EnableTwoGVerification, EnableTermsChecked, TestTimeInMinutes, CustomBackgroundImage, SignInPlaceCount, AdminPin, UserPin))
+
+        if (SettingsService.SaveSettings(_EventulaToken, _EventulaApiBaseAddress, _EnableCovidTest, _EnableTwoGVerification, _EnableTermsChecked, _TestTimeInMinutes, _CustomBackgroundImage, _SignInPlaceCount, _AdminPin, _UserPin))
         {
-            _NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("");
         }
         else
         {
@@ -50,50 +51,45 @@ public partial class Settings
         }
     }
 
-    protected void Submit()
-    {
-        Save();
-    }
-
     public override async Task SetParametersAsync(ParameterView parameters)
     {
-        var uri = _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri);
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("ac", out var accessCode))
         {
-            if (!_ProtectionService.CheckAdminAccessCodeHash(accessCode))
+            if (!ProtectionService.CheckAdminAccessCodeHash(accessCode))
             {
-                _NavigationManager.NavigateTo("");
+                NavigationManager.NavigateTo("");
             }
         }
         else
         {
-            _NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo(string.Empty);
         }
         await base.SetParametersAsync(parameters);
     }
 
     protected override void OnInitialized()
     {
-        var filtered = _DataStore.Load<ParticipantSignInPlace>().Where(e => e.Participant !=  null).ToArray();
-        ActiveParticipants = filtered.Count() > 0 ? true : false ;
+        var filtered = DataStore.Load<ParticipantSignInPlace>().Where(e => e.Participant != null).ToArray();
+        _ActiveParticipants = filtered.Length > 0;
     }
 
     protected override void OnParametersSet()
     {
-        EventulaToken = _SettingsService.RetrieveToken();
-        EventulaApiBaseAddress = _SettingsService.RetrieveEventulaApiBaseAddress();
-        EnableCovidTest = _SettingsService.RetrieveEnableCovidTest();
-        EnableTwoGVerification = _SettingsService.RetrieveEnableTwoGVerification();
-        EnableTermsChecked = _SettingsService.RetrieveEnableTermsChecked();
-        TestTimeInMinutes = _SettingsService.RetrieveTestTimeInMinutes();
-        CustomBackgroundImage = _SettingsService.RetrieveCustomBackgroundImage();
-        SignInPlaceCount = _SettingsService.RetrieveSignInPlaceCount();
-        AdminPin = _SettingsService.RetrieveAdminPin();
-        UserPin = _SettingsService.RetrieveUserPin();
+        _EventulaToken = SettingsService.RetrieveToken();
+        _EventulaApiBaseAddress = SettingsService.RetrieveEventulaApiBaseAddress();
+        _EnableCovidTest = SettingsService.RetrieveEnableCovidTest();
+        _EnableTwoGVerification = SettingsService.RetrieveEnableTwoGVerification();
+        _EnableTermsChecked = SettingsService.RetrieveEnableTermsChecked();
+        _TestTimeInMinutes = SettingsService.RetrieveTestTimeInMinutes();
+        _CustomBackgroundImage = SettingsService.RetrieveCustomBackgroundImage();
+        _SignInPlaceCount = SettingsService.RetrieveSignInPlaceCount();
+        _AdminPin = SettingsService.RetrieveAdminPin();
+        _UserPin = SettingsService.RetrieveUserPin();
     }
 
     protected void Cancel()
     {
-        _NavigationManager.NavigateTo("");
+        NavigationManager.NavigateTo(string.Empty);
     }
 }

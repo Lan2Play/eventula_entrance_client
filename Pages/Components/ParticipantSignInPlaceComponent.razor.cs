@@ -74,13 +74,13 @@ public partial class ParticipantSignInPlaceComponent
 
     public bool IsCoronaChecked
     {
-        get => _SettingsService.RetrieveEnableTwoGVerification() ? SignInPlace != null && SignInPlace.CoronaCheck != default : true;
+        get => !_SettingsService.RetrieveEnableTwoGVerification() || SignInPlace != null && SignInPlace.CoronaCheck != default;
         set => ActionWithSave(() => SignInPlace.CoronaCheck = value ? DateTimeOffset.Now : default);
     }
 
     public bool IsCoronaTestChecked
     {
-        get => _SettingsService.RetrieveEnableCovidTest() ? SignInPlace != null && SignInPlace.CoronaTestCheck != default : true;
+        get => !_SettingsService.RetrieveEnableCovidTest() || SignInPlace != null && SignInPlace.CoronaTestCheck != default;
         set => ActionWithSave(() => SignInPlace.CoronaTestCheck = value ? DateTimeOffset.Now : default);
     }
 
@@ -88,7 +88,7 @@ public partial class ParticipantSignInPlaceComponent
 
     public bool IsTermsChecked
     {
-        get => _SettingsService.RetrieveEnableTermsChecked() ? SignInPlace != null && SignInPlace.Terms != default : true;
+        get => !_SettingsService.RetrieveEnableTermsChecked() || SignInPlace != null && SignInPlace.Terms != default;
         set => ActionWithSave(() => SignInPlace.Terms = value ? DateTimeOffset.Now : default);
     }
 

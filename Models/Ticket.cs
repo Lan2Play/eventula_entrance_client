@@ -87,7 +87,7 @@ public class Participant : IStoreObject
     public Seat Seat { get; set; }
 
     [JsonPropertyName("revoked")]
-    public bool Revoked { get; set; }
+    public int Revoked { get; set; }
 }
 
 public class User

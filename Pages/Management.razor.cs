@@ -1,8 +1,8 @@
-using Microsoft.JSInterop;
 using EventulaEntranceClient.Services;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.AspNetCore.Components;
 using EventulaEntranceClient.Services.Interfaces;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.JSInterop;
 using System.Timers;
 
 namespace EventulaEntranceClient.Pages;
@@ -36,7 +36,7 @@ public partial class Management
     private EventulaApiService _EventulaApiService { get; set; }
 
     [Inject]
-    private SettingsService _SettingsService{ get; set; }
+    private SettingsService _SettingsService { get; set; }
 
 
     [Inject]
@@ -50,7 +50,7 @@ public partial class Management
 
     private string _LastTicket = string.Empty;
 
-    public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; } 
+    public List<ParticipantSignInPlace> ParticipantSignInPlaces { get; set; }
 
     public List<Participant> Participants { get; set; } = new List<Participant>();
 
@@ -190,8 +190,9 @@ public partial class Management
             var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
             if (ticketRequest?.Participant != null)
             {
-                if(ticketRequest.Participant.Revoked)
+                if (ticketRequest.Participant.Revoked != 0)
                 {
+                    // Todo Add Participant but disallow them to sign in
                     await _JSRuntime.InvokeAsync<string>("PlayAudio", "revokedParticipantSound");
                 }
                 else

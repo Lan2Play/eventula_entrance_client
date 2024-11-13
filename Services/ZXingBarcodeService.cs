@@ -19,16 +19,12 @@ public class ZXingBarcodeService : IBarcodeService
     {
         try
         {
-            using (var ms = new MemoryStream(image))
+            using var ms = new MemoryStream(image);
+            using var img = (Image<Rgb24>)Image.Load(ms);
+            var result = _BarcodeReader.Decode(img);
+            if (result != null)
             {
-                using (var img = (Image<Rgb24>)Image.Load(ms)) 
-                {
-                    var result = _BarcodeReader.Decode(img);
-                    if (result != null)
-                    {
-                        return result.Text;
-                    }
-                }               
+                return result.Text;
             }
         }
         catch(Exception ex)

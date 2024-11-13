@@ -2,49 +2,49 @@
 
 
 
-<form @onsubmit=Submit>
+<form @onsubmit=Save>
     <h1 class="mb-3 font-weight-normal text-center">Settings</h1>
 
     <div class="form-group">
         <label class="lg-font">Eventula token</label>
-        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@EventulaToken" placeholder="Token" />
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@_EventulaToken" placeholder="Token" />
     </div>    
     <div class="form-group">
         <label class="lg-font">Eventula api base address</label>
-        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@EventulaApiBaseAddress" placeholder="https://yoursite.com" />
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@_EventulaApiBaseAddress" placeholder="https://yoursite.com" />
     </div>    
     <div class="form-group">
         <label class="lg-font">Admin Pin (sha256)</label>
-        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@AdminPin" />
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@_AdminPin" />
     </div>    
     <div class="form-group">
         <label class="lg-font">User Pin (sha256)</label>
-        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@UserPin" />
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@_UserPin" />
     </div>    
     <div class="form-group">
         <label class="lg-font">Number of Sign in Places on the grid (default 12)</label>
-        <p><input type="number" @bind="@SignInPlaceCount" /></p>
+        <p><input type="number" @bind="@_SignInPlaceCount" /></p>
     </div>
 
     <div class="form-group">
         <label class="lg-font">Custom background image address</label>
-        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@CustomBackgroundImage" placeholder="https://yoursite.com/logo.jpg" />
+        <input class="form-control shadow-none transparent-input mb-3 lg-font" @bind="@_CustomBackgroundImage" placeholder="https://yoursite.com/logo.jpg" />
     </div>
     <div class="form-group">
         <label class="lg-font">Enable covid test</label>
-        <p><input type="checkbox" @bind="@EnableCovidTest" /></p>
+        <p><input type="checkbox" @bind="@_EnableCovidTest" /></p>
     </div>   
     <div class="form-group">
         <label class="lg-font">Test time in minutes (default 15)</label>
-        <p><input type="number" @bind="@TestTimeInMinutes" /></p>
+        <p><input type="number" @bind="@_TestTimeInMinutes" /></p>
     </div>
     <div class="form-group">
         <label class="lg-font">Enable 2G verification button</label>
-        <p><input type="checkbox" @bind="@EnableTwoGVerification" /></p>
+        <p><input type="checkbox" @bind="@_EnableTwoGVerification" /></p>
     </div>
     <div class="form-group">
         <label class="lg-font">Enable terms checked button</label>
-        <p><input type="checkbox" @bind="@EnableTermsChecked" /></p>
+        <p><input type="checkbox" @bind="@_EnableTermsChecked" /></p>
     </div>
 
 
@@ -55,8 +55,8 @@
 
     <hr class="mb-4">
     <div class="form-group">
-        <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="submit" disabled="@ActiveParticipants">
-            @if (!@ActiveParticipants)
+        <button class="btn btn-outline-primary shadow-none lg-font mb-3" type="submit" disabled="@_ActiveParticipants">
+            @if (!_ActiveParticipants)
             {
                 <text>Save</text>
             }

@@ -28,7 +28,9 @@ builder.Services.AddScoped<ProtectionService>();
 
 builder.Services.AddHttpClient(nameof(EventulaApiService), (serviceProvider, client) =>
 {
-    var settingsService = serviceProvider.GetService<SettingsService>();
+    using var scope = serviceProvider.CreateScope();
+    
+    var settingsService = scope.ServiceProvider.GetService<SettingsService>();
     client.BaseAddress = new Uri(settingsService.RetrieveEventulaApiBaseAddress());
 }).ConfigurePrimaryHttpMessageHandler(sp =>
 {

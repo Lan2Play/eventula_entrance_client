@@ -19,7 +19,7 @@
 
 function getFrame(src, dest) {
     let video = document.getElementById(src);
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
 
     canvas.width = 1920;
     canvas.height = 1080;

@@ -70,7 +70,7 @@ public partial class Management
         _InactiveTimer.Elapsed += UserInactive;
         _InactiveTimer.AutoReset = false;
 
-        _BackgroundTrigger.Trigger += Trigger;
+        _BackgroundTrigger.SubscribeTrigger(Trigger);
         _UiNotifyService.NewParticipant += OnNewParticipant;
         _ParticipantSignInPlacesCount = _SettingsService.RetrieveSignInPlaceCount();
         ParticipantSignInPlaces = new List<ParticipantSignInPlace>(_ParticipantSignInPlacesCount);
@@ -139,12 +139,11 @@ public partial class Management
             }
 
             IsRunningElectron = await _JSRuntime.InvokeAsync<bool>("isElectron").ConfigureAwait(false);
-
             await InvokeAsync(StateHasChanged);
         }
     }
 
-    private async void Trigger(object sender, EventArgs eventArgs)
+    private async Task Trigger()
     {
         try
         {
@@ -178,28 +177,19 @@ public partial class Management
         var qrCode = _BarcodeService.BarcodeTextFromImage(imageData);
         _Logger.LogInformation(string.IsNullOrEmpty(qrCode) ? "QR Code not found" : $"QR Code found {qrCode}");
 
-        if (!_LastTicket.Equals(qrCode, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(qrCode) || string.Equals(_LastTicket, qrCode, StringComparison.OrdinalIgnoreCase))
         {
-            _LastTicket = qrCode;
-            LastTicketNr = string.IsNullOrEmpty(qrCode) ? _NoTicketFound : qrCode;
-            await InvokeAsync(StateHasChanged);
+            return;
         }
 
-        if (!string.IsNullOrEmpty(qrCode))
+        _LastTicket = qrCode;
+        LastTicketNr = string.IsNullOrEmpty(qrCode) ? _NoTicketFound : $"Ticket Nr.: {qrCode.Split('/')[^1]}";
+        await InvokeAsync(StateHasChanged);
+
+        var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
+        if (ticketRequest?.Participant != null)
         {
-            var ticketRequest = await _EventulaApiService.RequestTicket(qrCode).ConfigureAwait(false);
-            if (ticketRequest?.Participant != null)
-            {
-                if (ticketRequest.Participant.Revoked != 0)
-                {
-                    // Todo Add Participant but disallow them to sign in
-                    await _JSRuntime.InvokeAsync<string>("PlayAudio", "revokedParticipantSound");
-                }
-                else
-                {
-                    await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
-                }
-            }
+            await AddParticipantAsync(ticketRequest.Participant).ConfigureAwait(false);
         }
     }
 
@@ -207,6 +197,16 @@ public partial class Management
     {
         if (participant == null)
         {
+            return;
+        }
+
+        // Reset last ticket to be able to scan again
+        _LastTicket = null;
+
+        if (participant.Revoked != 0)
+        {
+            Participants.Remove(participant);
+            _DataStore.Delete(participant);
             return;
         }
 
@@ -248,7 +248,8 @@ public partial class Management
             _DataStore.AddOrUpdate(participant);
             Participants.Add(participant);
 
-            await _JSRuntime.InvokeAsync<string>("PlayAudio", "newParticipantSound");
+            await _JSRuntime.InvokeAsync<string>("PlayAudio", participant.Revoked != 0 ? "revokedParticipantSound" : "newParticipantSound");
+
             AnimationClass = "glow-shadow";
             await InvokeAsync(StateHasChanged);
             await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
@@ -265,7 +266,7 @@ public partial class Management
             }
             else
             {
-                var participantInSignInPlace = ParticipantSignInPlaces.FirstOrDefault(x => x.Participant == oldParticipant);
+                var participantInSignInPlace = ParticipantSignInPlaces.Find(x => x.Participant == oldParticipant);
                 if (participantInSignInPlace != null)
                 {
                     participantInSignInPlace.Participant = participant;
@@ -292,7 +293,7 @@ public partial class Management
     #region IDisposable
     void IDisposable.Dispose()
     {
-        _BackgroundTrigger.Trigger -= Trigger;
+        _BackgroundTrigger.Unsubscribe(Trigger);
     }
     #endregion
 

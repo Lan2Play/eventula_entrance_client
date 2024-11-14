@@ -3,7 +3,8 @@
 public class BackgroundTrigger
 {
     private readonly ILogger<BackgroundTrigger> _Logger;
-    CancellationTokenSource _Cts;
+    readonly CancellationTokenSource _Cts;
+    private Func<Task> _Trigger;
 
     public BackgroundTrigger(ILogger<BackgroundTrigger> logger)
     {
@@ -18,7 +19,18 @@ public class BackgroundTrigger
         _Cts.Cancel();
     }
 
-    public event EventHandler Trigger;
+    public void SubscribeTrigger(Func<Task> trigger)
+    {
+        _Trigger = trigger;
+    }
+
+    public void Unsubscribe(Func<Task> trigger)
+    {
+        if (_Trigger == trigger)
+        {
+            _Trigger = null;
+        }
+    }
 
     private async Task CaptureFrameTimer(CancellationToken cancellationToken)
     {
@@ -26,9 +38,12 @@ public class BackgroundTrigger
         {
             try
             {
-                Trigger?.Invoke(this, new EventArgs());
+                if (_Trigger != null)
+                {
+                    await _Trigger();
+                }
 
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromMilliseconds(500), cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

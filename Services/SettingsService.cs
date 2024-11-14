@@ -5,6 +5,7 @@ public class SettingsService
     private const int _SettingsIdentifier = 1337;
     private readonly IDataStore _DataStore;
     private readonly ILogger<SettingsService> _Logger;
+    private Settings _CurrentSettings;
 
     public SettingsService(IDataStore dataStore, ILogger<SettingsService> logger)
     {
@@ -16,7 +17,7 @@ public class SettingsService
     {
         try
         {
-            _DataStore.AddOrUpdate(new Settings()
+            _CurrentSettings = new Settings()
             {
                 Id = _SettingsIdentifier,
                 Token = token,
@@ -29,8 +30,8 @@ public class SettingsService
                 SignInPlaceCount = signInPlaceCount,
                 AdminPin = adminPin,
                 UserPin = userPin
-
-            }) ;
+            };
+            _DataStore.AddOrUpdate(_CurrentSettings) ;
 
             return true;
         }
@@ -41,44 +42,54 @@ public class SettingsService
         }
     }
 
+    public Settings LoadSettings()
+    {
+        if(_CurrentSettings == null)
+        {
+            _CurrentSettings = _DataStore.LoadById<Settings>(_SettingsIdentifier);
+        }
+
+        return _CurrentSettings;
+    }
+
     public string RetrieveToken()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.Token;
+        return LoadSettings()?.Token;
     }        
     public string RetrieveEventulaApiBaseAddress()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.EventulaApiBaseAddress;
+        return LoadSettings()?.EventulaApiBaseAddress;
     }    
     public bool RetrieveEnableCovidTest()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.EnableCovidTest ?? true;
+        return LoadSettings()?.EnableCovidTest ?? true;
     }
     public bool RetrieveEnableTwoGVerification()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.EnableTwoGVerification ?? true;
+        return LoadSettings()?.EnableTwoGVerification ?? true;
     }
     public bool RetrieveEnableTermsChecked()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.EnableTermsChecked ?? true;
+        return LoadSettings()?.EnableTermsChecked ?? true;
     }
     public int RetrieveTestTimeInMinutes()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.TestTimeInMinutes ?? 15;
+        return LoadSettings()?.TestTimeInMinutes ?? 15;
     }    
     public int RetrieveSignInPlaceCount()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.SignInPlaceCount ?? 12;
+        return LoadSettings()?.SignInPlaceCount ?? 12;
     }
     public string RetrieveCustomBackgroundImage()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.CustomBackgroundImage;
+        return LoadSettings()?.CustomBackgroundImage;
     }    
     public string RetrieveAdminPin()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.AdminPin;
+        return LoadSettings()?.AdminPin;
     }     
     public string RetrieveUserPin()
     {
-        return _DataStore.LoadById<Settings>(_SettingsIdentifier)?.UserPin;
+        return LoadSettings()?.UserPin;
     }    
 }

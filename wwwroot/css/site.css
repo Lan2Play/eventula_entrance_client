@@ -142,3 +142,8 @@ video {
         box-shadow: 0 0 50px rgba(50, 160, 50, 1);
     }
 }
+
+
+.rotate-30 {
+    transform: rotate(30deg);
+}
